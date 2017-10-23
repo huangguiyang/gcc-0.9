@@ -1,0 +1,3418 @@
+\input texinfo  @c -*-texinfo-*-
+
+@settitle Internals of GNU CC
+@setfilename internals
+
+@ifinfo
+This file documents the internals of the GNU compiler.
+
+Copyright (C) 1987 Richard M. Stallman.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through Tex and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled ``GNU CC General Public License'' is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled ``GNU CC General Public License'' may be
+included in a translation approved by the author instead of in the original
+English.
+@end ifinfo
+
+@setchapternewpage odd
+
+@titlepage
+@center @titlefont{Internals of GNU CC}
+@sp 2
+@center Richard M. Stallman
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 1987 Richard M. Stallman.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled ``GNU CC General Public License'' is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled ``GNU CC General Public License'' may be
+included in a translation approved by the author instead of in the original
+English.
+@end titlepage
+@page
+
+@ifinfo
+@node Top, Switches, , (DIR)
+
+Introduction
+************
+
+This manual documents how to install and port the GNU C compiler.
+
+@end ifinfo
+@menu
+* Copying::         GNU CC General Public License says
+                     how you can copy and share GNU CC.
+* Switches::        Command switches supported by @samp{gcc}.
+* Installation::    How to configure, compile and install GNU CC.
+* Portability::     Goals of GNU CC's portability features.
+* Passes::          Order of passes, what they do, and what each file is for.
+* RTL::             The intermediate representation that most passes work on.
+* Machine Desc::    How to write machine description instruction patterns.
+* Machine Macros::  How to write the machine description C macros.
+@end menu
+
+@node Copying, Switches, Top, Top
+@unnumbered GNU CC GENERAL PUBLIC LICENSE
+
+  The license agreements of most software companies keep you at the
+mercy of those companies.  By contrast, our general public license is
+intended to give everyone the right to share GNU CC.  To make sure that
+you get the rights we want you to have, we need to make restrictions
+that forbid anyone to deny you these rights or to ask you to surrender
+the rights.  Hence this license agreement.
+
+  Specifically, we want to make sure that you have the right to give
+away copies of GNU CC, that you receive source code or else can get it
+if you want it, that you can change GNU CC or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  To make sure that everyone has such rights, we have to forbid you to
+deprive anyone else of these rights.  For example, if you distribute
+copies of GNU CC, you must give the recipients all the rights that you
+have.  You must make sure that they, too, receive or can get the
+source code.  And you must tell them their rights.
+
+  Also, for our own protection, we must make certain that everyone
+finds out that there is no warranty for GNU CC.  If GNU CC is modified by
+someone else and passed on, we want its recipients to know that what
+they have is not what we distributed, so that any problems introduced
+by others will not reflect on our reputation.
+
+  Therefore we (Richard Stallman and the Free Software Fundation,
+Inc.) make the following terms which say what you must do to be
+allowed to distribute or change GNU CC.
+
+@unnumberedsec COPYING POLICIES
+
+@enumerate
+@item
+You may copy and distribute verbatim copies of GNU CC source code as
+you receive it, in any medium, provided that you conspicuously and
+appropriately publish on each copy a valid copyright notice
+``Copyright @copyright{} 1987 Free Software Foundation, Inc.''  (or
+with the year updated if that is appropriate); keep intact the notices
+on all files that refer to this License Agreement and to the absence
+of any warranty; and give any other recipients of the GNU CC program a
+copy of this License Agreement along with the program.  You may charge
+a distribution fee for the physical act of transferring a copy.
+
+@item
+You may modify your copy or copies of GNU CC or any portion of it,
+and copy and distribute such modifications under the terms of
+Paragraph 1 above, provided that you also do the following:
+
+@itemize @bullet
+@item
+cause the modified files to carry prominent notices stating
+that you changed the files and the date of any change; and
+
+@item
+cause the whole of any work that you distribute or publish,
+that in whole or in part contains or is a derivative of GNU CC or
+any part thereof, to be licensed at no charge to all third
+parties on terms identical to those contained in this License
+Agreement (except that you may choose to grant more extensive
+warranty protection to some or all third parties, at your
+option).
+
+@item
+You may charge a distribution fee for the physical act of
+transferring a copy, and you may at your option offer warranty
+protection in exchange for a fee.
+@end itemize
+
+@item
+You may copy and distribute GNU CC or any portion of it in
+compiled, executable or object code form under the terms of Paragraphs
+1 and 2 above provided that you do the following:
+
+@itemize @bullet
+@item
+cause each such copy to be accompanied by the
+corresponding machine-readable source code, which must
+be distributed under the terms of Paragraphs 1 and 2 above; or,
+
+@item
+cause each such copy to be accompanied by a
+written offer, with no time limit, to give any third party
+free (except for a nominal shipping charge) a machine readable
+copy of the corresponding source code, to be distributed
+under the terms of Paragraphs 1 and 2 above; or,
+
+@item
+in the case of a recipient of GNU CC in compiled, executable
+or object code form (without the corresponding source code) you
+shall cause copies you distribute to be accompanied by a copy
+of the written offer of source code which you received along
+with the copy you received.
+@end itemize
+
+@item
+You may not copy, sublicense, distribute or transfer GNU CC
+except as expressly provided under this License Agreement.  Any attempt
+otherwise to copy, sublicense, distribute or transfer GNU CC is void and
+your rights to use the program under this License agreement shall be
+automatically terminated.  However, parties who have received computer
+software programs from you with this License Agreement will not have
+their licenses terminated so long as such parties remain in full compliance.
+
+@item
+If you wish to incorporate parts of GNU CC into other free programs
+whose distribution conditions are different, write to the Free Software
+Foundation at 1000 Mass Ave, Cambridge, MA 02138.  We have not yet worked
+out a simple rule that can be stated here, but we will often permit this.
+We will be guided by the two goals of preserving the free status of all
+derivatives our free software and of promoting the sharing and reuse of
+software.
+@end enumerate
+
+Your comments and suggestions about our licensing policies and our
+software are welcome!  Please contact the Free Software Foundation, Inc.,
+1000 Mass Ave, Cambridge, MA 02138, or call (617) 876-3296.
+
+@unnumberedsec NO WARRANTY
+
+  BECAUSE GNU CC IS LICENSED FREE OF CHARGE, WE PROVIDE ABSOLUTELY NO
+WARRANTY, TO THE EXTENT PERMITTED BY APPLICABLE STATE LAW.  EXCEPT
+WHEN OTHERWISE STATED IN WRITING, FREE SOFTWARE FOUNDATION, INC,
+RICHARD M. STALLMAN AND/OR OTHER PARTIES PROVIDE GNU CC "AS IS" WITHOUT
+WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND
+PERFORMANCE OF GNU CC IS WITH YOU.  SHOULD GNU CC PROVE DEFECTIVE, YOU
+ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW WILL RICHARD M.
+STALLMAN, THE FREE SOFTWARE FOUNDATION, INC., AND/OR ANY OTHER PARTY
+WHO MAY MODIFY AND REDISTRIBUTE GNU CC AS PERMITTED ABOVE, BE LIABLE TO
+YOU FOR DAMAGES, INCLUDING ANY LOST PROFITS, LOST MONIES, OR OTHER
+SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR
+INABILITY TO USE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA
+BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY THIRD PARTIES OR A
+FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS) GNU CC, EVEN
+IF YOU HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, OR FOR
+ANY CLAIM BY ANY OTHER PARTY.
+
+@node Switches, Installation, Copying, Top
+@chapter GNU CC Switches
+
+@table @samp
+@item -O
+Do optimize.
+
+@item -g
+Produce debugging information in DBX format.
+
+@item -c
+Compile but do not link the object files.
+
+@item -o @var{file}
+Place linker output in file @var{file}.
+
+@item -S
+Compile into assembler code but do not assemble.
+
+@item -m@var{machinespec}
+Machine-dependent switch specifying something about the type
+of target machine.  For example, using the 68000 machine description,
+@samp{-m68000} specifies do not use the 68020 instructions,
+and @samp{-msoft-float} specifies do not use the 68881 floating point
+instructions.
+
+@item -d@var{letters}
+Says to make debugging dumps at times specified by @var{letters}.
+Here are the possible letters:
+
+@table @samp
+@item t
+Dump syntax-tree.
+@item r
+Dump after RTL generation.
+@item j
+Dump after first jump optimization.
+@item s
+Dump after CSE.
+@item L
+Dump after loop optimization.
+@item f
+Dump after flow analysis.
+@item c
+Dump after instruction combination.
+@item l
+Dump after local register allocation.
+@item g
+Dump after global register allocation.
+@end table
+
+@item -pedantic
+Attempt to support strict ANSI standard C.  Valid ANSI standard C
+programs should compile properly with or without this switch.
+However, without this switch, certain useful or traditional constructs
+banned by the standard are supported.  With this switch, they are
+rejected.  There is no reason to use this switch; it exists only
+to satisfy pedants.
+
+@item E
+Preprocess the input files and output the results to standard output.
+
+@item C
+Tell the preprocessor not to discard comments.  Used with the @samp{-E}
+switch.
+
+@item I@var{dir}
+Search directory @var{dir} for include files.
+
+@item D@var{macro}
+Define macro @var{macro} with the empty string as its definition.
+
+@item D@var{macro}=@var{defn}
+Define macro @var{macro} as @var{defn}.
+
+@item U@var{macro}
+Undefine macro @var{macro}.
+
+@item w
+Inhibit warning messages.
+
+@item v
+Compiler driver program prints the commands it executes as it runs
+the preprocessor, compiler proper, assembler and linker.
+
+@item B@var{prefix}
+Compiler driver program tries @var{prefix} as a prefix for each program
+it tries to run.  These programs are @file{cpp}, @file{cc1},
+@file{as} and @file{ld}.
+
+For each subprogram to be run, the compiler driver first tries the
+@samp{-B} prefix, if any.  If that name is not found, or if @samp{-B}
+was not specified, the driver tries two standard prefixes, which are
+@file{/usr/lib/gcc-} and @file{/usr/local/lib/gcc-}.  If neither of
+those results in a file name that is found, the unmodified program
+name is searched for using the @samp{PATH} environment variable.
+@end table
+
+@node Installation, Portability, Switches, Top
+@chapter Installing GNU CC
+
+@enumerate
+@item
+Choose configuration files.
+
+@itemize @bullet
+@item
+Make a symbolic link from file @file{config.h} to the top-level
+config file for the machine you are using.  Its name should be
+@file{config-@var{machine}.h}.  This file is responsible for
+defining information about the host machine.  It includes
+@file{tm.h}.
+
+@item
+Make a symbolic link from @file{tm.h} to the machine-description
+macro file for your machine (its name should be
+@file{tm-@var{machine}.h}).
+
+@item
+Make a symbolic link from @file{md} to the
+machine description pattern file (its name should be
+@file{@var{machine}.md}).
+
+@item
+Make a symbolic link from
+@file{aux-output.c} to the output-subroutine file for your machine
+(its name should be @file{@var{machine}-output.c}).
+@end itemize
+
+@item
+Make sure the Bison parser generator is installed.
+
+@item
+Build the compiler.  Just type @samp{make} in the compiler directory.
+
+@item
+Delete @file{*.o} in the compiler directory.  The executables from
+the previous step remain for the next step.
+
+@item
+Remake the compiler with
+
+@example
+make CC=./gcc CFLAGS="-g -O -I."
+@end example
+
+@item
+Install the compiler's passes.  Copy the file @file{cc1} made by the
+compiler to the name @file{/usr/local/lib/gcc-cc1}.
+
+Make the file @file{/usr/local/lib/gcc-cpp} either a link to @file{/lib/cpp}
+or a copy of the file @file{cpp} generated by @samp{make}.
+
+@strong{Warning: the GNU CPP may not work for @file{ioctl.h}.} This
+cannot be fixed in the GNU CPP because the bug is in @file{ioctl.h}:
+at least on some machines, it relies on behavior that is incompatible
+with ANSI C.  This behavior consists of substituting for macro
+argument names when they appear inside of character constants.
+
+@item
+Install the compiler driver.  This is the file @file{gcc} generated
+by @samp{make}.
+@end enumerate
+
+@node Portability, Passes, Installation, Top
+@chapter GNU CC and Portability
+
+The main goal of GNU CC was to make a good, fast compiler for machines in
+the class that the GNU system aims to run on: 32-bit machines that address
+8-bit bytes and have several general registers.  Elegance, theoretical
+power and simplicity are only secondary.
+
+GNU CC gets most of the information about the target machine from a machine
+description which gives an algebraic formula for each of the machine's
+instructions.  This is a very clean way to describe the target.  But when
+the compiler needs information that is difficult to express in this
+fashion, I have not hesitated to define an ad-hoc parameter to the machine
+description.  The purpose of portability is to reduce the total work needed
+on the compiler; it was not of interest for its own sake.
+
+GNU CC does not contain machine dependent code, but it does contain code
+that depends on machine parameters such as endianness (whether the most
+significant byte has the highest or lowest address of the bytes in a word)
+and the availability of autoincrement addressing.  In the RTL-generation
+pass, it is often necessary to have multiple strategies for generating code
+for a particular kind of syntax tree, strategies that are usable for different
+combinations of parameters.  Often I have not tried to address all possible
+cases, but only the common ones or only the ones that I have encountered.
+As a result, a new target may require additional strategies.  You will know
+if this happens because the compiler will call @code{abort}.  Fortunately,
+the new strategies can be added to all versions of the compiler, and will
+be relevant only for target machines that need them.
+
+@node Passes, RTL, Portability, Top
+@chapter Passes and Files of the Compiler
+
+The overall control structure of the compiler is in @file{toplev.c}.  This
+file is responsible for initialization, decoding arguments, opening and
+closing files, and sequencing the passes.
+
+The parsing pass is invoked only once, to parse the entire input.  Each
+time a complete function definition or top-level data definition is read,
+the parsing pass calls the function @code{rest_of_compilation} in
+@file{toplev.c}, which is responsible for all further processing necessary,
+ending with output of the assembler language.  All other compiler passes
+run, in sequence, within @code{rest_of_compilation}.  After
+@code{rest_of_compilation} returns from compiling a function definition,
+the storage used for its compilation is entirely freed.
+
+Here is a list of all the passes of the compiler and their source files.
+Also included is a description of where debugging dumps can be requested
+with @samp{-d} switches.
+
+@itemize @bullet
+@item
+Parsing.  This pass reads the entire text of a function definition,
+constructing a syntax tree.  The tree representation does not entirely
+follow C syntax, because it is intended to support other languages as well.
+
+C data type analysis is also done in this pass, and every tree node that
+represents an expression has a data type attached.  Variables are represented
+as declaration nodes.
+
+Constant folding and associative-law simplifications are also done during
+this pass.
+
+The source files of the parsing pass are @file{parse.y}, @file{decl.c},
+@file{typecheck.c}, @file{stor-layout.c}, @file{fold-const.c}, and
+@file{tree.c}.  The last three are intended to be language-independent.
+There are also header files @file{parse.h}, @file{c-tree.h},
+@file{tree.h} and @file{tree.def}.  The last two define the format of
+the tree representation.
+
+@item
+RTL generation.  This pass converts the tree structure for one
+function into RTL code.  
+
+This is where the bulk of target-parameter-dependent code is found,
+since often it is necessary for strategies to apply only when certain
+standard kinds of instructions are available.  The purpose of named
+instruction patterns is to provide this information to the RTL
+generation pass.
+
+Optimization is done in this pass for @code{if}-conditions that are
+comparisons, boolean operations or conditional expressions.  Tail
+recursion is detected at this time also.  Decisions are made about how
+best to arrange loops and how to output @code{switch} statements.
+
+The files of the RTL generation pass are @file{stmt.c}, @file{expr.c},
+@file{explow.c}, @file{expmed.c}, @file{optabs.c} and @file{emit-rtl.c}.
+Also, the file @file{insn-emit.c}, generated from the machine description
+by the program @code{genemit}, is used in this pass.  The header files
+@file{expr.h} is used for communication within this pass.
+
+The header files @file{insn-flags.h} and @file{insn-codes.h}, generated from
+the machine description by the programs @code{genflags} and @code{gencodes},
+tell this pass which standard names are available for use and which patterns
+correspond to them.
+
+Aside from debugging information output, none of the following passes
+refers to the tree structure representation of the function.
+
+The switch @samp{-dr} causes a debugging dump of the RTL code after this
+pass.  This dump file's name is made by appending @samp{.rtl} to the
+input file name.
+
+@item
+Jump optimization.  This pass simplifies jumps to the following instruction,
+jumps across jumps, and jumps to jumps.  It deletes unreferenced labels
+and unreachable code, except that unreachable code that contains a loop
+is not recognized as unreachable in this pass.  (Such loops are deleted
+later in the basic block analysis.)
+
+Jump optimization is performed two or three times.  The first time is
+immediately following RTL generation.
+
+The source file of this pass is @file{jump.c}.
+
+The switch @samp{-dj} causes a debugging dump of the RTL code after this
+pass is run for the first time.  This dump file's name is made by appending
+@samp{.jump} to the input file name.
+
+@item
+Register scan.  This pass finds the first and last use of each
+register, as a guide for common subexpression elimination.  Its source
+is in @file{regclass.c}.
+
+@item
+Common subexpression elimination.  This pass also does constant
+propagation.  Its source file is @file{cse.c}.  If constant
+propagation causes conditional jumps to become unconditional or to
+become no-ops, jump optimization is run again when cse is finished.
+
+The switch @samp{-ds} causes a debugging dump of the RTL code after
+this pass.  This dump file's name is made by appending @samp{.cse} to
+the input file name.
+
+@item
+Loop optimization.  This pass moves constant expressions out of loops.
+Its source file is @file{loop.c}.
+
+The switch @samp{-dL} causes a debugging dump of the RTL code after
+this pass.  This dump file's name is made by appending @samp{.loop} to
+the input file name.
+
+@item
+Stupid register allocation is performed at this point in a
+nonoptimizing compilation.  It does a little data flow analysis as
+well.  When stupid register allocation is in use, the next pass
+executed is the reloading pass; the others in between are skipped.
+The source file is @file{stupid.c}, with header file @file{stupid.h}
+used for communication with the RTL generation pass.
+
+@item
+Data flow analysis (@file{flow.c}).  This pass divides the program
+into basic blocks (and in the process deletes unreachable loops); then
+it computes which pseudo-registers are live at each point in the
+program, and makes the first instruction that uses a value point at
+the instruction that computed the value.
+
+This pass also deletes computations whose results are never used, and
+combines memory references with add or subtract instructions to make
+autoincrement or autodecrement addressing.
+
+The switch @samp{-df} causes a debugging dump of the RTL code after
+this pass.  This dump file's name is made by appending @samp{.flow} to
+the input file name.  If stupid register allocation is in use, this
+dump file reflects the full results of such allocation.
+
+@item
+Instruction combination (@file{combine.c}).  This pass attempts to
+combine groups of two or three instructions that are related by data
+flow into single instructions.  It combines the RTL expressions for
+the instructions by substitution, simplifies the result using algebra,
+and then attempts to match the result against the machine description.
+
+The switch @samp{-dc} causes a debugging dump of the RTL code after
+this pass.  This dump file's name is made by appending @samp{.combine}
+to the input file name.
+
+@item
+Register class preferencing.  The RTL code is scanned to find out
+which register class is best for each pseudo register.  The source file
+is @file{regclass.c}.
+
+@item
+Local register allocation (@file{local-alloc.c}).  This pass allocates
+hard registers to pseudo registers that are used only within one basic
+block.  Because the basic block is linear, it can use fast and powerful
+techniques to do a very good job.
+
+The switch @samp{-dl} causes a debugging dump of the RTL code after
+this pass.  This dump file's name is made by appending @samp{.lreg} to
+the input file name.
+
+@item
+Global register allocation (@file{global-alloc.c}).  This pass
+allocates hard registers for the remaining pseudo registers (those
+whose life spans are not contained in one basic block).
+
+@item
+Reloading.  This pass finds instructions that are invalid because a
+value has failed to end up in a register, or has ended up in a
+register of the wrong kind.  It fixes up these instructions by
+reloading the problematical values into registers temporarily.
+Additional instructions are generated to do the copying.
+
+Source files are @file{reload.c} and @file{reload1.c}, plus the header
+@file{reload.h} used for communication between them.
+
+The switch @samp{-dg} causes a debugging dump of the RTL code after
+this pass.  This dump file's name is made by appending @samp{.greg} to
+the input file name.
+
+@item
+Jump optimization is repeated, this time including cross-jumping.
+
+@item
+Final.  This pass outputs the assembler code for the function.  It is
+also responsible for identifying no-op move instructions and spurious
+test and compare instructions.  The function entry and exit sequences
+are generated directly as assembler code in this pass; they never
+exist as RTL.  Pseudo registers that did not get hard registers are
+given stack slots in this pass.
+
+The source files are @file{final.c} plus @file{insn-output.c}; the
+latter is generated automatically from the machine description by the
+tool @file{genoutput}.  The header file @file{conditions.h} is used
+for communication between these files.
+
+@item
+Debugging information output.  This is run after final because it must
+output the stack slot offsets for pseudo registers that did not get
+hard registers.  Source files are @file{dbxout.c} for DBX symbol table
+format and @file{symout.c} for GDB's own symbol table format.
+@end itemize
+
+Some additional files are used by all or many passes:
+
+@itemize @bullet
+@item
+Every pass uses @file{machmode.def}, which defines the machine modes.
+
+@item
+All the passes that work with RTL use the header files @file{rtl.h}
+and @file{rtl.def}, and subroutines in file @file{rtl.c}.  The
+tools @code{gen*} also use these files to read and work with the
+machine description RTL.
+
+@item
+Several passes refer to the header file @file{insn-config.h} which
+contains a few parameters (C macro definitions) generated
+automatically from the machine description RTL by the tool
+@code{genconfig}.
+
+@item
+Several passes use the instruction recognizer, which consists of
+@file{recog.c} and @file{recog.h}, plus the files @file{insn-recog.c}
+and @file{insn-extract.c} that are generated automatically from the
+machine description by the tools @file{genrecog} and @file{genextract}.
+
+@item
+Several passes use the header file @file{regs.h} which defines the
+information recorded about pseudo register usage, @file{basic-block.h}
+which defines the information recorded about basic blocks.
+
+@item
+@file{hard-reg-set.h} defines the type @code{HARD_REG_SET}, a bit-vector
+with a bit for each hard register, and some macros to manipulate it.
+This type is just @code{int} if the machine has few enough hard registers;
+otherwise it is an array of @code{int} and some of the macros expand
+into loops.
+@end itemize
+
+@node RTL, Machine Desc, Passes, Top
+@chapter RTL Representation
+
+Most of the work of the compiler is done on an intermediate representation
+called register tranfer language.  In this language, the instructions to be
+output are described, pretty much one by one, in an algebraic form that
+describes what the instruction does.
+
+RTL is inspired by Lisp lists.  It has both an internal form, made up of
+structures that point at other structures, and a textual form that is used
+in the machine description and in printed debugging dumps.  The textual
+form uses nested parentheses to indicate the pointers in the internal form.
+
+@menu
+* RTL Objects::       Expressions vs vectors vs strings vs integers.
+* Accessors::         Macros to access expression operands or vector elts.
+* Machine Modes::     Describing the size and format of a datum.
+* Constants::         Expressions with constant values.
+* Regs and Memory::   Expressions representing register contents or memory.
+* Arithmetic::        Expressions representing arithmetic on other expressions.
+* Comparisons::       Expressions representing comparison of expressions.
+* Bit Fields::        Expressions representing bit-fields in memory or reg.
+* Conversions::       Extending, truncating, floating or fixing.
+* RTL Declarations::  Declaring volatility, constancy, etc.
+* Side Effects::      Expressions for storing in registers, etc.
+* Incdec::            Embedded side-effects for autoincrement addressing.
+* Insns::             Expression types for entire insns.
+* Sharing::           Some expressions are unique; others *must* be copied.
+@end menu
+
+@node RTL Objects, Accessors, RTL, RTL
+@section RTL Object Types
+
+RTL uses four kinds of objects: expressions, integers, strings and vectors.
+Expressions are the most important ones.  An RTL expression is a C
+structure, but it is usually referred to with a pointer; a type that is
+given the typedef name @code{rtx}.
+
+An integer is simply an @code{int}, and a string is a @code{char *}.
+Within rtl code, strings appear only inside @samp{symbol_ref} expressions,
+but they appear in other contexts in the rtl expressions that make up
+machine descriptions.  Their written form uses decimal digits.
+
+A string is a sequence of characters.  In core it is represented as a
+@code{char *} in usual C fashion, and they are written in C syntax as well.
+However, strings in RTL may never be null.  If you write an empty string in
+a machine description, it is represented in core as a null pointer rather
+than as a pointer to a null character.  In certain contexts, these null
+pointers instead of strings are valid.
+
+A vector contains an arbitrary, specified number of pointers to
+expressions.  The number of elements in the vector is explicitly present in
+the vector.  The written form of a vector consists of square brackets
+(@samp{[@dots{}]}) surrounding the elements, in sequence and with
+whitespace separating them.  Vectors of length zero are not created; null
+pointers are used instead.
+
+Expressions are classified by @dfn{expression code}.  The expression code
+is a name defined in @file{rtl.def}, which is also (in upper case) a C
+enumeration constant.  The possible expression codes and their meanings are
+machine-independent.  The code of an rtx can be extracted with the macro
+@code{GET_CODE (@var{x})} and altered with @code{PUT_CODE (@var{x},
+@var{newcode})}.
+
+The expression code determines how many operands the expression contains,
+and what kinds of objects they are.  In RTL, unlike Lisp, you cannot tell
+by looking at an operand what kind of object it is.  Instead, you must know
+from its context---from the expression code of the containing expression.
+For example, in an expression of code @code{subreg}, the first operand is
+to be regarded as an expression and the second operand as an integer.  In
+an expression of code @code{plus}, there are two operands, both of which
+are to be regarded as expressions.  In a @code{symbol_ref} expression,
+there is one operand, which is to be regarded as a string.
+
+Expressions are written as parentheses containing the name of the
+expression type, its flags and machine mode if any, and then the operands
+of the expression (separated by spaces).
+
+In a few contexts a null pointer is valid where an expression is normally
+wanted.  The written form of this is @samp{(nil)}.
+
+@node Accessors, Machine Modes, RTL Objects, RTL
+@section Access to Operands
+
+For each expression type @file{rtl.def} specifies the number of contained
+objects and their kinds, with four possibilities: @samp{e} for expression
+(actually a pointer to an expression), @samp{i} for integer, @samp{s} for
+string, and @samp{E} for vector of expressions.  The sequence of letters
+for an expression code is called its @dfn{format}.  Thus, the format of
+@code{subreg} is @samp{ei}.
+
+Two other format characters are used occasionally: @samp{u} and @samp{0}.
+@samp{u} is equivalent to @samp{e} except that it is printed differently in
+debugging dumps, and @samp{0} means a slot whose contents do not fit any
+normal category.  @samp{0} slots are not printed at all in dumps, and are
+often used in special ways by small parts of the compiler.
+
+There are macros to get the number of operands and the format of an
+expression code:
+
+@table @code
+@item GET_RTX_LENGTH (@var{code})
+Number of operands of an rtx of code @var{code}.
+
+@item GET_RTX_FORMAT (@var{code})
+The format of an rtx of code @var{code}, as a C string.
+@end table
+
+Operands of expressions are accessed using the macros @code{XEXP},
+@code{XINT} and @code{XSTR}.  Each of these macros takes two arguments: an
+expression-pointer (rtx) and an operand number (counting from zero).  Thus,
+
+@example
+XEXP (x, 2)
+@end example
+
+@noindent
+accesses operand 2 of expression @var{x}, as an expression.
+
+@example
+XINT (x, 2)
+@end example
+
+@noindent
+accesses the same operand as an integer.  @code{XSTR}, used in the same
+fashion, would access it as a string.
+
+Any operand can be accessed as an integer, as an expression or as a string.
+You must choose the correct method of access for the kind of value actually
+stored in the operand.  You would do this based on the expression code of
+the containing expression.  That is also how you would know how many
+operands there are.
+
+For example, if @var{x} is a @samp{subreg} expression, you know that it has
+two operands which can be correctly accessed as @code{XEXP (x, 0)} and
+@code{XINT (x, 1)}.  If you did @code{XINT (x, 0)}, you would get the
+address of the expression operand but cast as an integer; that might
+occasionally be useful, but it would be cleaner to write @code{(int) XEXP
+(x, 0)}.  @code{XEXP (x, 1)} would also compile without error, and would
+return the second, integer operand cast as an expression pointer, which
+would probably result in a crash when accessed.  Nothing stops you from
+writing @code{XEXP (x, 28)} either, but this will access memory past the
+end of the expression with unpredictable results.
+
+Access to operands which are vectors is more complicated.  You can use the
+macro @code{XVEC} to get the vector-pointer itself, or the macros
+@code{XVECEXP} and @code{XVECLEN} to access the elements and length of a
+vector.
+
+@table @code
+@item XVEC (@var{exp}, @var{idx})
+Access the vector-pointer which is operand number @var{idx} in @var{exp}.
+
+@item XVECLEN (@var{exp}, @var{idx})
+Access the length (number of elements) in the vector which is
+in operand number @var{idx} in @var{exp}.  This value is an @code{int}.
+
+@item XVECLEN (@var{exp}, @var{idx}, @var{eltnum})
+Access element number @var{eltnum} in the vector which is
+in operand number @var{idx} in @var{exp}.  This value is an @code{rtx}.
+
+It is up to you to make sure that @var{eltnum} is not negative
+and is less than @code{XVECLEN (@var{exp}, @var{idx})}.
+@end table
+
+All the macros defined in this section expand into lvalues and therefore
+can be used to assign the operands, lengths and vector elements as well as
+to access them.
+
+@node Machine Modes, Constants, Accessors, RTL
+@section Machine Modes
+
+A machine mode describes a size of data object and the representation used
+for it.  In the C code, machine modes are represented by an enumeration
+type, @code{enum machine_mode}.  Each rtl expression has room for a machine
+mode and so do certain kinds of tree expressions (declarations and types,
+to be precise).
+
+In debugging dumps and machine descriptions, the machine mode of an RTL
+expression is written after the expression code with a colon to separate
+them.  The letters @samp{mode} which appear at the end of each machine mode
+name are omitted.  For example, @code{(reg:SI 38)} is a @samp{reg}
+expression with machine mode @code{SImode}.  If the mode is
+@code{VOIDmode}, it is not written at all.
+
+Here is a table of machine modes.
+
+@table @code
+@item QImode
+``Quarter-Integer'' mode represents a single byte treated as an integer.
+
+@item HImode
+``Half-Integer'' mode represents a two-byte integer.
+
+@item SImode
+``Single Integer'' mode represents a four-byte integer.
+
+@item DImode
+``Double Integer'' mode represents an eight-byte integer.
+
+@item TImode
+``Tetra Integer'' (?) mode represents a sixteen-byte integer.
+
+@item SFmode
+``Single Floating'' mode represents a single-precision (four byte) floating
+point number.
+
+@item DFmode
+``Double Floating'' mode represents a double-precision (eight byte) floating
+point number.
+
+@item TFmode
+``Tetra Floating'' mode represents a quadruple-precision (sixteen byte)
+floating point number.
+
+@item BLKmode
+``Block'' mode represents values that are aggregates to which none of
+the other modes apply.  In rtl, only memory references can have this mode,
+and only if they appear in string-move or vector instructions.  On machines
+which have no such instructions, @code{BLKmode} will not appear in RTL.
+
+@item VOIDmode
+Void mode means the absence of a mode or an unspecified mode.
+For example, RTL expresslons of code @samp{const_int} have mode
+@code{VOIDmode} because they can be taken to have whatever mode the context
+requires.  In debugging dumps of RTL, @code{VOIDmode} is expressed by
+the absence of any mode.
+
+@item EPmode
+``Entry Pointer'' mode is intended to be used for function variables in
+Pascal and other block structured languages.  Such values contain
+both a function address and a static chain pointer for access to
+automatic variables of outer levels.  This mode is only partially
+implemented since C does not use it.
+
+@item CSImode@r{, @dots{}}
+``Complex Single Integer'' mode stands for a complex number represented
+as a pair of @code{SImode} integers.  Any of the integer and floating modes
+may have @samp{C} prefixed to its name to obtain a complex number mode.
+For example, there are @code{CQImode}, @code{CSFmode}, and @code{CDFmode}.
+Since C does not support complex numbers, these machine modes are only
+partially implemented.
+
+@item BImode
+This is the machine mode of a bit-field in a structure.  It is used
+only in the syntax tree, never in RTL, and in the syntax tree it appears
+only in declaration nodes.  In C, it appears only in @code{FIELD_DECL}
+nodes for structure fields defined with a bit size.
+@end table
+
+The machine description defines @code{Pmode} as a C macro which expands
+into the machine mode used for addresses.  Normally this is @code{SImode}.
+
+The only modes which a machine description @i{must} support are
+@code{QImode}, @code{SImode}, @code{SFmode} and @code{DFmode}.  The
+compiler will attempt to use @code{DImode} for two-word structures and
+unions, but it would not be hard to program it to avoid this.  Likewise,
+you can arrange for the C type @code{short int} to avoid using
+@code{HImode}.  In the long term it would be desirable to make the set of
+available machine modes machine-dependent and eliminate all assumptions
+about specific machine modes or their uses from the machine-independent
+code of the compiler.
+
+Here are some C macros that relate to machine modes:
+
+@table @code
+@item GET_MODE (@var{x})
+Returns the machine mode of the rtx @var{x}.
+
+@item PUT_MODE (@var{x}, @var{newmode})
+Alters the machine mode of the rtx @var{x} to be @var{newmode}.
+
+@item GET_MODE_SIZE (@var{m})
+Returns the size in bytes of a datum of mode @var{m}.
+
+@item GET_MODE_BITSIZE (@var{m})
+Returns the size in bits of a datum of mode @var{m}.
+
+@item GET_MODE_UNIT_SIZE (@var{m})
+Returns the size in bits of the subunits of a datum of mode @var{m}.
+This is the same as @code{GET_MODE_SIZE} except in the case of
+complex modes and @code{EPmode}.  For them, the unit size ithe
+size of the real or imaginary part, or the size of the function
+pointer or the context pointer.
+@end table
+
+@node Constants, Regs and Memory, Machine Modes, RTL
+@section Constant Expression Types
+
+The simplest RTL expressions are those that represent constant values.
+
+@table @code
+@item (const_int @var{i})
+This type of expression represents the integer value @var{i}.  @var{i}
+is customarily accessed with the macro @code{INTVAL} as in
+@code{INTVAL (exp)}, which is equivalent to @code{XINT (exp, 0)}.
+
+There is only one expression object for the integer value zero;
+it is the value of the variable @code{const0_rtx}.  Likewise, the
+only expression for integer value one is found in @code{const1_rtx}.
+Any attempt to create an expression of code @code{const_int} and
+value zero or one will return @code{const0_rtx} or @code{const1_rtx}
+as appropriate.
+
+@item (const_double:@var{m} @var{i0} @var{i1})
+Represents a floating point constant value of mode @var{m}.  The two
+integers @var{i0} and @var{i1} together contain the bits of a
+@code{double} value.  To convert them to a @code{double}, do
+
+@example
+union { double d; int i[2];} u;
+u.i[0] = XINT (x, 0);
+u.i[1] = XINT (x, 1);
+@end example
+
+@noindent
+and then refer to @code{u.d}.  The value of the constant is
+represented as a double in this fashion even if the value represented
+is single-precision.
+
+@code{dconst0_rtx} and @code{fconst0_rtx} are @samp{CONST_DOUBLE}
+expressions with value 0 and modes @code{DFmode} and @code{SFmode}.
+
+@item (symbol_ref @var{symbol})
+Represents the value of an assembler label for data.  @var{symbol} is
+a string that describes the name of the assembler label.  If it starts
+with a @samp{*}, the label is the rest of @var{symbol} not including
+the @samp{*}.  Otherwise, the label is @var{symbol}, prefixed with
+@samp{_}.
+
+@item (label_ref @var{label})
+Represents the value of an assembler label for code.  It contains one
+operand, an expression, which must be a @code{code_label} that appears
+in the instruction sequence to identify the place where the label
+should go.
+
+The reason for using a distinct expression type for code label
+references is so that jump optimization can distinguish them.
+
+@item (const @var{exp})
+Represents a constant that is the result of an assembly-time
+arithmetic computation.  The operand, @var{exp}, is an expression that
+contains only constants (@samp{const_int}, @samp{symbol_ref} and
+@samp{label_ref} expressions) combined with @samp{plus} and
+@samp{minus}.  However, not all combinations are valid, since the
+assembler cannot do arbitrary arithmetic on relocatable symbols.
+@end table
+
+@node Regs and Memory, Arithmetic, Constants, RTL
+@section Registers and Memory
+
+Here are the RTL expression types for describing access to machine
+registers and to main memory.
+
+@table @code
+@item (reg:@var{m} @var{n})
+For small values of the integer @var{n} (less than
+@code{FIRST_PSEUDO_REGISTER}), this stands for a reference to machine
+register number @var{n}: a @dfn{hard register}.  For larger values of
+@var{n}, it stands for a temporary value or @dfn{pseudo register}.
+The compiler's strategy is to generate code assuming an unlimited
+number of such pseudo registers, and later convert them into hard
+registers or into memory references.
+
+The symbol @code{FIRST_PSEUDO_REGISTER} is defined by the machine
+description, since the number of hard registers on the machine is an
+invariant characteristic of the machine.  Note, however, that not
+all of the machine registers must be general registers.  All the
+machine registers that can be used for storage of data are given
+hard register numbers, even those that can be used only in certain
+instructions or can hold only certain types of data.
+
+Each pseudo register number used in a function's rtl code is
+represented by a unique @samp{reg} expression.
+
+@var{m} is the machine mode of the reference.  It is necessary because
+machines can generally refer to each register in more than one mode.
+For example, a register may contain a full word but there may be
+instructions to refer to it as a half word or as a single byte, as
+well as instructions to refer to it as a floating point number of
+various precisions.
+
+Even for a register that the machine can access in only one mode,
+the mode must always be specified.
+
+A hard register may be accessed in various modes throughout one
+function, but each pseudo register is given a natural mode
+and is accessed only in that mode.  When it is necessary to describe
+an access to a pseudo register using a nonnatural mode, a @samp{subreg}
+expression is used.
+
+A @samp{reg} expression with a machine mode that specifies more than
+one word of data may actually stand for several consecutive registers.
+If in addition the register number specifies a hardware register, then
+it actually represents several consecutive hardware registers starting
+with the specified one.
+
+Such multi-word hardware register @samp{reg} expressions may not be live
+across the boundary of a basic block.  The lifetime analysis pass does not
+know how to record properly that several consecutive registers are
+actually live there, and therefore register allocation would be confused.
+The CSE pass must go out of its way to make sure the situation does
+not arise.
+
+@item (subreg:@var{m} @var{reg} @var{wordnum})
+@samp{subreg} expressions are used to refer to a register in a machine
+mode other than its natural one, or to refer to one register of
+a multi-word @samp{reg} that actually refers to several registers.
+
+Each pseudo-register has a natural mode.  If it is necessary to
+operate on it in a different mode---for example, to perform a fullword
+move instruction on a pseudo-register that contains a single byte---
+the pseudo-register must be enclosed in a @samp{subreg}.  In such
+a case, @var{wordnum} is zero.
+
+The other use of @samp{subreg} is to extract the individual registers
+of a multi-register value.  Machine modes such as @code{DImode} and
+@code{EPmode} indicate values longer than a word, values which usually
+require two consecutive registers.  To access one of the registers,
+use a @samp{subreg} with mode @code{SImode} and a @var{wordnum} that
+says which register.
+
+The compilation parameter @code{WORDS_BIG_ENDIAN}, if defined, says
+that word number zero is the most significant part; otherwise, it is
+the least significant part.
+
+Note that it is not valid to access a @code{DFmode} value in @code{SFmode}
+using a @samp{subreg}.  On some machines the most significant part of a
+@code{DFmode} value does not have the same format as a single-precision
+floating value.
+
+@item (cc0)
+This refers to the machine's condition code register.  It has no
+operands and may not have a machine mode.  It may be validly used in
+only two contexts: as the destination of an assignment (in test and
+compare instructions) and in comparison operators comparing against
+zero (@code{const_int} with value zero; that is to say,
+@code{const0_rtx}.
+
+There is only one expression object of code @code{cc0}; it is the
+value of the variable @code{cc0_rtx}.  Any attempt to create an
+expression of code @code{cc0} will return @code{cc0_rtx}.
+
+One special thing about the condition code register is that instructions
+can set it implicitly.  On many machines, nearly all instructions set
+the condition code based on the value that they compute or store.
+It is not necessary to record these actions explicitly in the RTL
+because the machine description includes a prescription for recognizing
+the instructions that do so (by means of the macro @code{NOTICE_UPDATE_CC}).
+Only instructions whose sole purpose is to set the condition code,
+and instructions that use the condition code, need mention @code{(cc0)}.
+
+@item (pc)
+This represents the machine's program counter.  It has no operands and
+may not have a machine mode.  @code{(pc)} may be validly used only in
+certain specific contexts in jump instructions.
+
+There is only one expression object of code @code{pc}; it is the value of
+the variable @code{pc_rtx}.  Any attempt to create an expression of code
+@code{pc} will return @code{pc_rtx}.
+
+All instructions that do not jump alter the program counter implicitly,
+but there is no need to mention this in the RTL.
+
+@item (mem:@var{m} @var{addr})
+This rtx represents a reference to main memory at an address
+represented by the expression @var{addr}.  @var{m} specifies how
+large a unit of memory is accessed.
+@end table
+
+@node Arithmetic, Comparisons, Regs and Memory, RTL
+@section RTL Expressions for Arithmetic
+
+@table @code
+@item (plus:@var{m} @var{x} @var{y})
+Represents the sum of the values represented by @var{x} and @var{y}
+carried out in machine mode @var{m}.  This is valid only if
+@var{x} and @var{y} both are valid for mode @var{m}.
+
+@item (minus:@var{m} @var{x} @var{y})
+Like @samp{plus} but represents subtraction.
+
+@item (minus @var{x} @var{y})
+Represents the result of subtracting @var{y} from @var{x}
+for purposes of comparison.  The absence of a machine mode
+in the @samp{minus} expression indicates that the result is
+computed without overflow, as if with infinite precision.
+
+Of course, machines can't really subtract with infinite precision.
+However, they can pretend to do so when only the sign of the
+result will be used, which is the case when the result is stored
+in @code{(cc0)}.  And that is the only was this kind of expression
+may validly be used: as a value to be stored in the condition codes.
+
+@item (neg:@var{m} @var{x})
+Represents the negation (subtraction from zero) of the value
+represented by @var{x}, carried out in mode @var{m}.  @var{x} must be
+valid for mode @var{m}.
+
+@item (mult:@var{m} @var{x} @var{y})
+Represents the signed product of the values represented by @var{x} and
+@var{y} carried out in machine mode @var{m}.  If
+@var{x} and @var{y} are both valid for mode @var{m}, this is ordinary
+size-preserving multiplication.  Alteratively, both @var{x} and @var{y}
+may be valid for a different, narrower mode.  This represents the
+kind of multiplication that generates a product wider than the operands.
+Widening multiplication and same-size multiplication are completely
+distinct and supported by different machine instructions; machines may
+support one but not the other.
+
+@samp{mult} may be used for floating point division as well.
+Then @var{m} is a floating point machine mode.
+
+@item (umult:@var{m} @var{x} @var{y})
+Like @samp{mult} but represents unsigned multiplication.  It may be
+used in both same-size and widening forms, like @samp{mult}.
+@samp{umult} is used only for fixed-point division.
+
+@item (div:@var{m} @var{x} @var{y})
+Represents the quotient in signed division of @var{x} by @var{y},
+carried out in machine mode @var{m}.  If @var{m} is a floating-point
+mode, it represents the exact quotient; otherwise, the integerized
+quotient.  If @var{x} and @var{y} are both valid for mode @var{m},
+this is ordinary size-preserving division.  Some machines have
+division instructions in which the operands and quotient widths are
+not all the same; such instructions are represented by @samp{div}
+expressions in which the machine modes are not all the same.
+
+@item (udiv:@var{m} @var{x} @var{y})
+Like @samp{div} but represents unsigned division.
+
+@item (mod:@var{m} @var{x} @var{y})
+@itemx (umod:@var{m} @var{x} @var{y})
+Like @samp{div} and @samp{udiv} but represent the remainder instead of
+the quotient.
+
+@item (not:@var{m} @var{x})
+Represents the bitwise complement of the value represented by @var{x},
+carried out in mode @var{m}, which must be a fixed-point machine mode.
+@var{x} must be valid for mode @var{m}, which must be a fixed-point mode.
+
+@item (and:@var{m} @var{x} @var{y})
+Represents the bitwise logical-and of the values represented by
+@var{x} and @var{y}, carried out in machine mode @var{m}.  This is
+valid only if @var{x} and @var{y} both are valid for mode @var{m},
+which must be a fixed-point mode.
+
+@item (ior:@var{m} @var{x} @var{y})
+Represents the bitwise inclusive-or of the values represented by
+@var{x} and @var{y}, carried out in machine mode @var{m}.  This is
+valid only if @var{x} and @var{y} both are valid for mode @var{m},
+which must be a fixed-point mode.
+
+@item (xor:@var{m} @var{x} @var{y})
+Represents the bitwise exclusive-or of the values represented by
+@var{x} and @var{y}, carried out in machine mode @var{m}.  This is
+valid only if @var{x} and @var{y} both are valid for mode @var{m},
+which must be a fixed-point mode.
+
+@item (lshift:@var{m} @var{x} @var{c})
+Represents the result of logically shifting @var{x} left by @var{c}
+places.  @var{x} must be valid for the mode @var{m}, a fixed-point
+machine mode.  @var{c} must be valid for a fixed-point mode;
+which mode is determined by the mode called for in the machine
+description entry for the left-shift instruction.  For example,
+on the Vax, the mode of @var{c} is @code{QImode} regardless of @var{m}.
+
+On some machines, negative values of @var{c} may be meaningful; this
+is why logical left shift an arithmetic left shift are distinguished.
+For example, Vaxes have no right-shift instructions, and right shifts
+are represented as left-shift instructions whose counts happen
+to be negative constants or else computed (in a previous instruction)
+by negation.
+
+@item (ashift:@var{m} @var{x} @var{c})
+Like @samp{lshift} but for arithmetic left shift.
+
+@item (lshiftrt:@var{m} @var{x} @var{c})
+@itemx (ashiftrt:@var{m} @var{x} @var{c})
+Like @samp{lshift} and @samp{ashift} but for right shift.
+
+@item (rotate:@var{m} @var{x} @var{c})
+@itemx (rotatert:@var{m} @var{x} @var{c})
+Similar but represent left and right rotate.
+
+@item (abs:@var{m} @var{x})
+Represents the absolute value of @var{x}, computed in mode @var{m}.
+@var{x} must be valid for @var{m}.
+
+@item (sqrt:@var{m} @var{x})
+Represents the square root of @var{x}, computed in mode @var{m}.
+@var{x} must be valid for @var{m}.  Most often @var{m} will be
+a floating point mode.
+@end table
+
+@node Comparisons, Bit Fields, Arithmetic, RTL
+@section Comparison Operations
+
+Comparison operators test a relation on two operands and are considered to
+represent the value 1 if the relation holds, or zero if it does not.  The
+mode of the comparison is determined by the operands; they must both be
+valid for a common machine mode.  A comparison with both operands constant
+would be invalid as the machine mode could not be deduced from it, but such
+a comparison should never exist in rtl due to constant folding.
+
+Inequality comparisons come in two flavors, signed and unsigned.  Thus,
+there are distinct expression codes @samp{GT} and @samp{GTU} for signed and
+unsigned greater-than.  These can produce different results for the same
+pair of integer values: for example, 1 is signed greater-than -1 but not
+unsigned greater-than, because -1 when regarded as unsigned is actually
+0xffffffff which is greater than 1.
+
+The signed comparisons are also used for floating point values.  Floating
+point comparisons are distinguished by the machine modes of the operands.
+
+The comparison operators may be used to compare the condition codes
+@code{(cc0)} against zero, as in @code{(eq (cc0) (const_int 0))}.
+Such a construct actually refers to the result of the preceding
+instruction in which the condition codes were set.  The above
+example stands for 1 if the condition codes were set to say
+``zero'' or ``equal'', 0 otherwise.  Although the same comparison
+operators are used for this as may be used in other contexts
+on actual data, no confusion can result since the machine description
+would never allow both kinds of uses in the same context.
+
+@table @code
+@item (eq @var{x} @var{y})
+1 if the values represented by @var{x} and @var{y} are equal,
+otherwise 0.
+
+@item (ne @var{x} @var{y})
+1 if the values represented by @var{x} and @var{y} are not equal,
+otherwise 0.
+
+@item (gt @var{x} @var{y})
+1 if the @var{x} is greater than @var{y}.  If they are fixed-point,
+the comparison is done in a signed sense.
+
+@item (gtu @var{x} @var{y})
+Like @samp{gt} but does unsigned comparison, on fixed-point numbers only.
+
+@item (lt @var{x} @var{y})
+@item (ltu @var{x} @var{y})
+Like @samp{gt} and @samp{gtu} but test for ``less than''.
+
+@item (ge @var{x} @var{y})
+@item (geu @var{x} @var{y})
+Like @samp{gt} and @samp{gtu} but test for ``greater than or equal''.
+
+@item (le @var{x} @var{y})
+@item (leu @var{x} @var{y})
+Like @samp{gt} and @samp{gtu} but test for ``less than or equal''.
+
+@item (if_then_else @var{cond} @var{then} @var{else})
+This is not a comparison operation but is listed here because it is
+always used in conjunction with a comparison operation.  To be
+precise, @var{cond} is a comparison expression.  This expression
+represents a choice, according to @var{cond}, between the value
+represented by @var{then} and the one represented by @var{else}.
+
+On most machines, @samp{if_then_else} expressions are valid only
+to express conditional jumps.
+@end table
+
+@node Bit Fields, Conversions, Comparisons, RTL
+@section Bit-fields
+
+Special expression codes exist to represent bit-field instructions.
+These types of expressions are lvalues in rtl; they may appear
+on the left side of a assignment, indicating insertion of a value
+into the specified bit field.
+
+@table @code
+@item (sign_extract:SI @var{loc} @var{size} @var{pos})
+This represents a reference to a sign-extended bit-field contained or
+starting in @var{loc} (a memory or register reference).  The bit field
+is @var{size} bits wide and starts at bit @var{pos}.  The compilation
+switch @code{BITS_BIG_ENDIAN} says which end of the memory unit
+@var{pos} counts from.
+
+Which machine modes are valid for @var{loc} depends on the machine,
+but typically @var{loc} should be a single byte when in memory
+or a full word in a register.
+
+@item (zero_extract:SI @var{loc} @var{pos} @var{size})
+Like @samp{sign_extract} but refers to an unsigned or zero-extended
+bit field.  The same sequence of bits are extracted, but they
+are filled to an entire word with zeros instead of by sign-extension.
+@end table
+
+@node Conversions, RTL Declarations, Bit Fields, RTL
+@section Conversions
+
+All conversions between machine modes must be represented by
+explicit conversion operations.  For example, an expression
+which the sum of a byte and a full word cannot be written as
+@code{(plus:SI (reg:QI 34) (reg:SI 80))} because the @samp{plus}
+operation requires two operands of the same machine mode.
+Therefore, the byte-sized operand is enclosed in a conversion
+operation, as in
+
+@example
+(plus:SI (sign_extend:SI (reg:QI 34)) (reg:SI 80))
+@end example
+
+The conversion operation is not a mere placeholder, because there
+may be more than one way of converting from a given starting mode
+to the desired final mode.  The conversion operation code says how
+to do it.
+
+@table @code
+@item (sign_extend:@var{m} @var{x})
+Represents the result of sign-extending the value @var{x}
+to machine mode @var{m}.  @var{m} must be a fixed-point mode
+and @var{x} a fixed-point value of a mode narrower than @var{m}.
+
+@item (zero_extend:@var{m} @var{x})
+Represents the result of zero-extending the value @var{x}
+to machine mode @var{m}.  @var{m} must be a fixed-point mode
+and @var{x} a fixed-point value of a mode narrower than @var{m}.
+
+@item (float_extend:@var{m} @var{x})
+Represents the result of extending the value @var{x}
+to machine mode @var{m}.  @var{m} must be a floating point mode
+and @var{x} a floating point value of a mode narrower than @var{m}.
+
+@item (truncate:@var{m} @var{x})
+Represents the result of truncating the value @var{x}
+to machine mode @var{m}.  @var{m} must be a fixed-point mode
+and @var{x} a fixed-point value of a mode wider than @var{m}.
+
+@item (float_truncate:@var{m} @var{x})
+Represents the result of truncating the value @var{x}
+to machine mode @var{m}.  @var{m} must be a floating point mode
+and @var{x} a floating point value of a mode wider than @var{m}.
+
+@item (float:@var{m} @var{x})
+Represents the result of converting fixed point value @var{x}
+to floating point mode @var{m}.
+
+@item (fix:@var{m} @var{x})
+Represents the result of converting floating point value @var{x}
+to fixed point mode @var{m}.  How rounding is done is not specified.
+
+@end table
+
+@node RTL Declarations, Side Effects, Conversions, RTL
+@section Declarations
+
+Declaration expression codes do not represent arithmetic operations
+but rather state assertions about their operands.
+
+@table @code
+@item (volatile:@var{m} @var{x})
+Represents the same value @var{x} does, but makes the assertion
+that it should be treated as a volatile value.  This forbids
+coalescing multiple accesses or deleting them even if it would
+appear to have no effect on the program.  @var{x} must be a @samp{mem}
+expression with mode @var{m}.
+
+The first thing the reload pass does to an insn is to remove all
+@samp{volatile} expressions from it; each one is replaced by its
+operand.
+
+Recognizers will never recognize anything with @samp{volatile} in it.
+This automatically prevents some optimizations on such things
+(such as instruction combination).  After the reload pass removes
+all volatility information, the insns can be recognized.
+
+Cse removes @samp{volatile} from destinations of @samp{set}'s, because
+no optimizations reorder such @samp{set}s.  This is not required for
+correct code and is done to permit some optimization on the value to
+be stored.
+
+@item (unchanging:@var{m} @var{x})
+Represents the same value @var{x} does, but makes the assertion
+that its value is effectively constant during the execution
+of the current function.  This permits references to @var{x}
+to be moved freely within the function.  @var{x} must be a @samp{reg}
+expression with mode @var{m}.
+
+@item (strict_low_part (subreg:@var{m} (reg:@var{n} @var{r}) 0))
+This expression code is used in only one context: operand 0 of a
+@samp{set} expression.  In addition, the operand of this expression
+must be a @samp{subreg} expression.
+
+The presence of @samp{strict_low_part} says that the part of the
+register which is meaningful in mode @var{n} but is not part of
+mode @var{m} is not to be altered.  Normally, an assignment to such
+a subreg is allowed to have undefined effects on the rest of the
+register when @var{m} is less than a word.
+@end table
+
+@node Side Effects, Incdec, RTL Declarations, RTL
+@section Side Effect Expressions
+
+The expression codes described so far represent values, not actions.
+But machine instructions never produce values; they are meaningful
+only for their side effects on the state of the machine.  Special
+expression codes are used to represent side effects.
+
+The body of an instruction is always one of these side effect codes;
+the codes described above, which represent values, appear only as
+the operands of these.
+
+@table @code
+@item (set @var{lval} @var{x})
+Represents the action of storing the value of @var{x} into the place
+represented by @var{lval}.  @var{lval} must be an expression
+representing a place that can be stored in: @samp{reg} (or
+@samp{subreg} or @samp{strict_low_part}), @samp{mem}, @samp{pc} or
+@samp{cc0}.
+
+If @var{lval} is a @samp{reg}, @samp{subreg} or @samp{mem}, it has a
+machine mode; then @var{x} must be valid for that mode.
+
+If @var{lval} is a @samp{reg} whose machine mode is less than the full
+width of the register, then it means that the part of the register
+specified by the machine mode is given the specified value and the
+rest of the register receives an undefined value.  Likewise, if
+@var{lval} is a @samp{subreg} whose machine mode is narrower than
+@code{SImode}, the rest of the register can be changed in an undefined way.
+
+If @var{lval} is a @samp{strict_low_part} of a @samp{subreg}, then the
+part of the register specified by the machine mode of the
+@samp{subreg} is given the value @var{x} and the rest of the register
+is not changed.
+
+If @var{lval} is @code{(cc0)}, it has no machine mode, and @var{x} may
+have any mode.  This represents a ``test'' or ``compare'' instruction.
+
+If @var{lval} is @code{(pc)}, we have a jump instruction, and the
+possibilities for @var{x} are very limited.  It may be a
+@samp{label_ref} expression (unconditional jump).  It may be an
+@samp{if_then_else} (conditional jump), in which case either the
+second or the third operand must be @code{(pc)} (for the case which
+does not jump) and the other of the two must be a @samp{label_ref}
+(for the case which does jump).  @var{x} may also be a @samp{mem} or
+@code{(plus:SI (pc) @var{y})}, where @var{y} may be a @samp{reg} or a
+@samp{mem}; these unusual patterns are used to represent jumps through
+branch tables.
+
+@item (return)
+Represents a return from the current function, on machines where
+this can be done with one instruction, such as Vaxen.  On machines
+where a multi-instruction ``epilogue'' must be executed in order
+to return from the function, returning is done by jumping to a
+label which precedes the epilogue, and the @samp{return} expression
+code is never used.
+
+@item (call @var{function} @var{nargs})
+Represents a function call.  @var{function} is a @samp{mem} expression
+whose address is the address of the function to be called.  @var{nargs}
+is an expression representing the number of words of argument.
+
+Each machine has a standard machine mode which @var{function} must
+have.  The machine descripion defines macro @code{FUNCTION_MODE} to
+expand into the requisite mode name.  The purpose of this mode is to
+specify what kind of addressing is allowed, on machines where the
+allowed kinds of addressing depend on the machine mode being
+addressed.
+
+@item (clobber @var{x})
+Represents the storing or possible storing of an unpredictable,
+undescribed value into @var{x}, which must be a @samp{reg} or
+@samp{mem} expression.
+
+One place this is used is in string instructions that store standard
+values into particular hard registers.  It may not be worth the
+trouble to describe the values that are stored, but it is essential
+to inform the compiler that the registers will be altered, lest it
+attempt to keep data in them across the string instruction.
+
+@var{x} may also be null---a null C pointer, no expression at all.
+Such a @code{(clobber (null))} expression means that all memory
+locations must be presumed clobbered.
+
+Note that the machine description classifies certain hard registers as
+``call-clobbered''.  All function call instructions are assumed by
+default to clobber these registers, so there is no need to use
+@samp{clobber} expressions to indicate this fact.  Also, each function
+call is assumed to have the potential to alter any memory location.
+
+@item (use @var{x})
+Represents the use of the value of @var{x}.  It indicates that
+the value in @var{x} at this point in the program is needed,
+even though it may not be apparent whythis is so.  Therefore, the
+compiler will not attempt to delete instructions whose only
+effect is to store a value in @var{x}.  @var{x} must be a @samp{reg}
+expression.
+
+@item (parallel [@var{x0} @var{x1} @dots{}])
+Represents several side effects performed in parallel.  The square
+brackets stand for a vector; the operand of @samp{parallel} is a
+vector of expressions.  @var{x0}, @var{x1} and so on are individual
+side effects---expressions of code @samp{set}, @samp{call},
+@samp{return}, @samp{clobber} or @samp{use}.
+
+``In parallel'' means that first all the values used in
+the individual side-effects are computed, and second all the actual
+side-effects are performed.  For example,
+
+@example
+(parallel [(set (reg:SI 1) (mem:SI (reg:SI 1)))
+           (set (mem:SI (reg:SI 1)) (reg:SI 1))])
+@end example
+
+@noindent
+says unambiguously that the values of hard register 1 and the memory
+location addressed by it are interchanged.  In both places where
+@code{(reg:SI 1)} appears as a memory address it refers to the value
+in register 1 @i{before} the execution of the instruction.
+@end table
+
+Three expression codes appear in place of a side effect, as the body
+of an insn, though strictly speaking they do not describe side effects
+as such:
+
+@table @code
+@item (asm_input @var{s})
+Represents literal assembler code as described by the string @var{s}.
+
+@item (addr_vec:@var{m} [@var{lr0} @var{lr1} @dots{}])
+Represents a table of jump addresses.  @var{lr0} etc. are
+@samp{label_ref} expressions.  The mode @var{m} specifies how much
+space is given to each address; normally @var{m} would be
+@code{Pmode}.
+
+@item (addr_diff_vec:@var{m} @var{base} [@var{lr0} @var{lr1} @dots{}])
+Represents a table of jump addresses expressed as offsets from
+@var{base}.  @var{lr0} etc. are @samp{label_ref} expressions and so is
+@var{base}.  The mode @var{m} specifies how much space is given to
+each address-difference.
+@end table
+
+@node Incdec, Insns, Side Effects, RTL
+@section Embedded Side-Effects on Addresses
+
+Four special side-effect expression codes appear as memory addresses.
+
+@table @code
+@item (pre_dec:@var{m} @var{x})
+Represents the side effect of decrementing @var{x} by a standard
+amount and represents also the value that @var{x} has after being
+decremented.  @var{x} must be a @samp{reg} or @samp{mem}, but most
+machines allow only a @samp{reg}.  @var{m} must be the machine mode
+for pointers on the machine in use.  The amount @var{x} is decrement
+by is the length in bytes of the machine mode of the containing memory
+reference of which this expression serves as the address.  Here is an
+example of its use:
+
+@example
+(mem:DF (pre_dec:SI (reg:SI 39)))
+@end example
+
+@noindent
+This says to decrement pseudo register 39 by the length of a @code{DFmode}
+value and use the result to address a @code{DFmode} value.
+
+@item (pre_inc:@var{m} @var{x})
+Similar, but specifies incrementing @var{x} instead of decrementing it.
+
+@item (post_dec:@var{m} @var{x})
+Represents the same side effect as @samp{pre_decrement} but a different
+value.  The value represented here is the value @var{x} has @i{before}
+being decremented.
+
+@item (post_inc:@var{m} @var{x})
+Similar, but specifies incrementing @var{x} instead of decrementing it.
+@end table
+
+These embedded side effect expressions must be used with care.  Instruction
+patterns may not use them.  Until the @samp{flow} pass of the compiler,
+they may occur only to represent pushes onto the stack.  The @samp{flow}
+pass finds cases where registers are incremented or decremented in one
+instruction and used as an address shortly before or after; these cases are
+then transformed to use pre- or post-increment or -decrement.
+
+Explicit popping of the stack could be represented with these embedded
+side effect operators, but that would not be safe; the instruction
+combination pass could move the popping past pushes, thus changing
+the meaning of the code.
+
+An instruction that can be represented with an embedded side effect
+could also be represented using @samp{parallel} containing an additional
+@samp{set} to describe how the address register is altered.  This is not
+done because machines that allow these operations at all typically
+allow them wherever a memory address is called for.  Describing them as
+additional parallel stores would require doubling the number of entries
+in the machine description.
+
+@node Insns, Sharing, Incdec, RTL
+@section Insns
+
+The RTL representation of the code for a function is a doubly-linked
+chain of objects called @dfn{insns}.  Insns are expressions with
+special codes that are used for no other purpose.  Some insns are
+actual instructions; others represent dispatch tables for @code{switch}
+statements; others represent labels to jump to or various sorts of
+declaratory information.
+
+In addition to its own specific data, each insn must have a unique id number
+that distinguishes it from all other insns in the current function, and
+chain pointers to the preceding and following insns.  These three fields
+occupy the same position in every insn, independent of the expression code
+of the insn.  They could be accessed with @code{XEXP} and @code{XINT},
+but instead three special macros are always used:
+
+@table @code
+@item INSN_UID (@var{i})
+Accesses the unique id of insn @var{i}.
+
+@item PREV_INSN (@var{i})
+Accesses the chain pointer to the insn preceding @var{i}.
+If @var{i} is the first insn, this is a null pointer.
+
+@item NEXT_INSN (@var{i})
+Accesses the chain pointer to the insn following @var{i}.
+If @var{i} is the last insn, this is a null pointer.
+@end table
+
+The @code{NEXT_INSN} and @code{PREV_INSN} pointers must always
+correspond: if @var{i} is not the first insn,
+
+@example
+NEXT_INSN (PREV_INSN (@var{insn})) == @var{insn}
+@end example
+
+@noindent
+is always true.
+
+Every insn has one of the following six expression codes:
+
+@table @code
+@item insn
+The expression code @samp{insn} is used for instructions that do not jump
+and do not do function calls.  Insns with code @samp{insn} have four
+additional fields beyond the three mandatory ones listed above.
+These four are described in a table below.
+
+@item jump_insn
+The expression code @samp{jump_insn} is used for instructions that may jump
+(or, more generally, may contain @samp{label_ref} expressions).
+@samp{jump_insn} insns have the same extra fields as @samp{insn} insns,
+accessed in the same way.
+
+@item call_insn
+The expression code @samp{call_insn} is used for instructions that may do
+function calls.  It is important to distinguish these instructions because
+they imply that certain registers and memory locations may be altered
+unpredictably.
+
+@samp{call_insn} insns have the same extra fields as @samp{insn} insns,
+accessed in the same way.
+
+@item code_label
+A @samp{code_label} insn represents a label that a jump insn can jump to.
+It contains one special field of data in addition to the three standard ones.
+It is used to hold the @dfn{label number}, a number that identifies this
+label uniquely among all the labels in the compilation (not just in the
+current function).  Ultimately, the label is represented in the assembler
+output as an assembler label @samp{L@var{n}} where @var{n} is the label number.
+
+@item barrier
+Barriers are placed in the instruction stream after unconditional
+jump instructions to indicate that the jumps are unconditional.
+They contain no information beyond the three standard fields.
+
+@item note
+@samp{note} insns are used to represent additional debugging and
+declaratory information.  They contain two nonstandard fields, an
+integer which is accessed with the macro @code{NOTE_LINE_NUMBER} and a
+string accessed with @code{NOTE_SOURCE_FILE}.
+
+If @code{NOTE_LINE_NUMBER} is positive, the note represents the
+position of a source line and @code{NOTE_SOURCE_FILE} is the source file name
+that the line came from.  These notes control generation of line
+number data in the assembler output.
+
+Otherwise, @code{NOTE_LINE_NUMBER} is not really a line number but a
+code with one of the following values (and @code{NOTE_SOURCE_FILE}
+must contain a null pointer):
+
+@table @code
+@item NOTE_INSN_DELETED
+Such a note is completely ignorable.  Some passes of the compiler
+delete insns by altering them into notes of this kind.
+
+@item NOTE_INSN_BLOCK_BEG
+@itemx NOTE_INSN_BLOCK_END
+These types of notes indicate the position of the beginning and end
+of a level of scoping of variable names.  They control the output
+of debugging information.
+
+@item NOTE_INSN_LOOP_BEG
+@itemx NOTE_INSN_LOOP_END
+These types of notes indicate the position of the beginning and end
+of a @code{while} or @code{for} loop.  They enable the loop optimizer
+to find loops quickly.
+@end table
+@end table
+
+Here is a table of the extra fields of @samp{insn}, @samp{jump_insn}
+and @samp{call_insn} insns:
+
+@table @code
+@item PATTERN (@var{i})
+An expression for the side effect performed by this insn.
+
+@item REG_NOTES (@var{i})
+A list (chain of @samp{expr_list} expressions) giving information
+about the usage of registers in this insn.  This list is set up by the
+@code{flow} pass; it is a null pointer until then.
+
+@item LOG_LINKS (@var{i})
+A list (chain of @samp{insn_list} expressions) of previous ``related''
+insns: insns which store into registers values that are used for the
+first time in this insn.  (An additional constraint is that neither a
+jump nor a label may come between the related insns).  This list is
+set up by the @code{flow} pass; it is a null pointer until then.
+
+@item INSN_CODE (@var{i})
+An integer that says which pattern in the machine description matches
+this insn, or -1 if the matching has not yet been attempted.
+
+Such matching is never attempted and this field is not used on an insn
+whose pattern consists of a single @samp{use}, @samp{clobber},
+@samp{asm}, @samp{addr_vec} or @samp{addr_diff_vec} expression.
+@end table
+
+The @code{LOG_LINKS} field of an insn is a chain of @samp{insn_list}
+expressions.  Each of these has two operands: the first is an insn,
+and the second is another @samp{insn_list} expression (the next one in
+the chain).  The last @samp{insn_list} in the chain has a null pointer
+as second operand.  The significant thing about the chain is which
+insns apepar in it (as first operands of @samp{insn_list}
+expressions).  Their order is not significant.
+
+The @code{REG_NOTES} field of an insn is a similar chain but of
+@samp{expr_list} expressions instead of @samp{insn_list}.  The first
+operand is a @samp{reg} rtx.  Its presence in the list can have three
+possible meanings, distinguished by a value that is stored in the
+machine-mode field of the @samp{expr_list} because that is a
+conveniently available space, but that is not really a machine mode.
+These values belong to the C type @code{enum reg_note} and there are
+three of them:
+
+@table @code
+@item REG_DEAD
+The @samp{reg} listed dies in this insn; that is to say, altering
+the value immediately after this insn would not affect the future
+behavior of the program.
+
+@item REG_INC
+The @samp{reg} listed is incremented (or decremented; at this level
+there is no distinction) by an embedded side effect inside this insn.
+
+@item REG_CONST
+The @samp{reg} listed has a value that could safely be replaced
+everywhere by the value that this insn copies into it.  (``Safety''
+here refers to the data flow of the program; such replacement may
+require reloading into registers for some of the insns in which
+the @samp{reg} is replaced.)
+
+@item REG_WAS_0
+The @samp{reg} listed contained zero before this insn.  You can rely
+on this note if it is present; its absence implies nothing.
+@end table
+
+(The only difference between the expression codes @samp{insn_list} and
+@samp{expr_list} is that the first operand of an @samp{insn_list} is
+assumed to be an insn and is printed in debugging dumps as the insn's
+unique id; the first operand of an @samp{expr_list} is printed in the
+ordinary way as an expression.)
+
+@node Sharing,, Insns, RTL
+@section Structure Sharing Assumptions
+
+The compiler assumes that certain kinds of RTL expressions are unique;
+there do not exist two distinct objects representing the same value.
+In other cases, it makes an opposite assumption: that no RTL expression
+object of a certain kind appears in more than one place in the
+containing structure.
+
+These assumptions refer to a single function; except for the RTL
+objects that describe global variables and external functions,
+no RTL objects are common to two functions.
+
+@itemize @bullet
+@item
+Each pseudo-register has only a single @samp{reg} object to represent it,
+and therefore only a single machine mode.
+
+@item
+For any symbolic label, there is only one @samp{symbol_ref} object
+referring to it.
+
+@item
+There is only one @samp{const_int} expression with value zero,
+and only one with value one.
+
+@item
+There is only one @samp{pc} expression.
+
+@item
+There is only one @samp{cc0} expression.
+
+@item
+There is only one @samp{const_double} expression with mode
+@code{SFmode} and value zero, and only one with mode @code{DFmode} and
+value zero.
+
+@item
+No @samp{label_ref} appears in more than one place in the RTL structure;
+in other words, it is safe to do a tree-walk of all the insns in the function
+and assume that each time a @samp{label_ref} is seen it is distinct from all
+other @samp{label_refs} seen.
+
+@item
+Aside from the cases listed above, the only kind of expression
+object that may appear in more than one place is the @samp{mem}
+object that describes a stack slot or a static variable.
+@end itemize
+
+@node Machine Desc, Machine Macros, RTL, Top
+@chapter Machine Descriptions
+
+A machine description has two parts: a file of instruction patterns
+(@file{.md} file) and a C header file of macro definitions.
+
+The @file{.md} file for a target machine contains a pattern for each
+instruction that the target machine supports (or at least each instruction
+that is worth telling the compiler about).  It may also contain comments.
+A semicolon causes the rest of the line to be a comment, unless the semicolon
+is inside a quoted string.
+
+See the next chapter for information on the C header file.
+
+@menu
+* Patterns::            How to write instruction patterns.
+* Example::             Example of an instruction pattern.
+* Constraints::         When not all operands are general operands.
+* Standard Names::      Names mark patterns to use for code generation.
+* Dependent Patterns::  Having one pattern may make you need another.
+@end menu
+
+@node Patterns, Example, Machine Desc, Machine Desc
+@section Instruction Patterns
+
+Each instruction pattern contains an incomplete RTL expression, with pieces
+to be filled in later, operand constraints that restrict how the pieces can
+be filled in, and an output pattern or C code to generate the assembler
+output, all wrapped up in a @samp{define_insn} expression.
+
+Sometimes an insn can match more than one instruction pattern.  Then the
+pattern that appears first in the machine description is the one used.
+Therefore, more specific patterns should usually go first in the
+description.
+
+The @samp{define_insn} expression contains four operands:
+
+@enumerate
+@item
+An optional name.  The presence of a name indicate that this instruction
+pattern can perform a certain standard job for the RTL-generation
+pass of the compiler.  This pass knows certain names and will use
+the instruction patterns with those names, if the names are defined
+in the machine description.
+
+The absence of a name is indicated by writing an empty string
+where the name should go.  Nameless instruction patterns are never
+used for generating RTL code, but they may permit several simpler insns
+to be combined later on.
+
+Names that are not thus known and used in RTL-generation have no
+effect; they are equivalent to no name at all.
+
+@item
+The recognition template.  This is a vector of incomplete RTL
+expressions which show what the instruction should look like.  It is
+incomplete because it may contain @samp{match_operand} and
+@samp{match_dup} expressions that stand for operands of the
+instruction.
+
+If the vector has only one element, that element is what the
+instruction should look like.  If the vector has multiple elements,
+then the instruction looks like a @samp{parallel} expression
+containing that many elements as described.
+
+@item
+A condition.  This is a string which contains a C expression that is
+the final test to decide whether an insn body matches this pattern.
+
+For a named pattern, the condition (if present) may not depend on
+the data in the insn being matched, but only the target-machine-type
+flags.  The compiler needs to test these conditions during
+initialization in order to learn exactly which named instructions are
+available in a particular run.
+
+For nameless patterns, the condition is applied only when matching an
+individual insn, and only after the insn has matched the pattern's
+recognition template.  The insn's operands may be found in the vector
+@code{operands}.
+
+@item
+A string that says how to output matching insns as assembler code.  In
+the simpler case, the string is an output template, much like a
+@code{printf} control string.  @samp{%} in the string specifies where
+to insert the operands of the instruction; the @samp{%} is followed by
+a single-digit operand number.
+
+@samp{%c@var{digit}} can be used to subtitute an operand that is a
+constant value without the syntax that normally indicates an immediate
+operand.
+
+@samp{%a@var{digit}} can be used to substitute an operand as if it
+were a memory reference, with the actual operand treated as the address.
+This may be useful when outputting a ``load address'' instruction,
+because often the assembler syntax for such an instruction requires
+you to write the operand as if it were a memory reference.
+
+The template may generate multiple assembler instructions.
+Write the text for the instructions, with @samp{\;} between them.
+
+If the output control string starts with a @samp{*}, then it is not an
+output template but rather a piece of C program that should compute a
+template.  It should execute a @code{return} statement to return the
+template-string you want.  Most such templates use C string literals,
+which require doublequote characters to delimit them.  To include
+these doublequote characters in the string, prefix each one with
+@samp{\}.
+
+The operands may be found in the array @code{operands}, whose C
+data type is @code{rtx []}.
+
+It is possible to output an assembler instruction and then go on to
+output or compute more of them, using the subroutine
+@code{output_asm_insn}.  This receives two arguments: a
+template-string and a vector of operands.  The vector may be
+@code{operands}, or it may be another array of @code{rtx} that you
+declare locally and initialize yourself.
+@end enumerate
+
+The recognition template is used also, for named patterns, for
+constructing insns.  Construction involves substituting specified
+operands into a copy of the template.  Matching involves determining
+the values that serve as the operands in the insn being matched.  Both
+of these activities are controlled by two special expression types
+that direct matching and substitution of the operands.
+
+@table @code
+@item (match_operand:@var{m} @var{n} @var{testfn} @var{constraint})
+This expression is a placeholder for operand number @var{n} of
+the insn.  When constructing an insn, operand number @var{n}
+will be substituted at this point.  When matching an insn, whatever
+appears at this position in the insn will be taken as operand
+number @var{n}; but it must satisfy @var{testfn} or this instruction
+pattern will not match at all.
+
+Operand numbers must be chosen consecutively counting from zero in
+each instruction pattern.  There may be only one @samp{match_operand}
+expression in the pattern for each expression number, and they must
+appear in order of increasing expression number.
+
+@var{testfn} is a string that is the name of a C function that accepts
+two arguments, a machine mode and an expression.  During matching,
+the function will be called with @var{m} as the mode argument
+and the putative operand as the other argument.  If it returns zero,
+this instruction pattern fails to match.  @var{testfn} may be
+an empty string; then it means no test is to be done on the operand.
+
+Most often, @var{testfn} is @code{"general_operand"}.  It checks
+that the putative operand is either a constant, a register or a
+memory reference, and that it is valid for mode @var{m}.
+
+@var{constraint} is explained later.
+
+@item (match_dup @var{n})
+This expression is also a placeholder for operand number @var{n}.
+It is used when the operand needs to appear more than once in the
+insn.
+
+In construction, @samp{match_dup} behaves exactly like
+@var{match_operand}: the operand is substituted into the insn being
+constructed.  But in matching, @samp{match_dup} behaves differently.
+It assumes that operand number @var{n} has already been determined by
+a @samp{match_operand} apparing earlier in the recognition template,
+and it matches only an identical-looking expression.
+
+@item (address (match_operand:@var{m} @var{n} "address_operand" ""))
+This complex of expressions is a placeholder for an operand number
+@var{n} in a ``load address'' instruction: an operand which specifies
+a memory location in the usual way, but for which the actual operand
+value used is the address of the location, not the contents of the
+location.
+
+@samp{address} expressions never appear in RTL code, only in machine
+descriptions.  And they are used only in machine descriptions that do
+not use the operand constraint feature.  When operand constraints are
+in use, the letter @samp{p} in the constraint serves this purpose.
+
+@var{m} is the machine mode of the @emph{memory location being
+addressed}, not the machine mode of the address itself.  That mode is
+always the same on a given target machine (it is @code{Pmode}, which
+normally is @code{SImode}), so there is no point in mentioning it;
+thus, no machine mode is written in the @samp{address} expression.  If
+some day support is added for machines in which addresses of different
+kinds of objects appear differently or are used differently (such as
+the PDP-10), different formats would perhaps need different machine
+modes and these modes might be written in the @samp{address}
+expression.
+@end table
+
+@node Example, Constraints, Patterns, Machine Desc
+@section Example of @samp{define_insn}
+
+Here is an actual example of an instruction pattern, for the 68000/68020.
+
+@example
+(define_insn "tstsi"
+  [(set (cc0)
+	(match_operand:SI 0 "general_operand" "rm"))]
+  ""
+  "*
+@{ if (TARGET_68020 || ! ADDRESS_REG_P (operands[0]))
+    return \"tstl %0\";
+  return \"cmpl #0,%0\"; @}")
+@end example
+
+This is an instruction that sets the condition codes based on the value of
+a general operand.  It has no condition, so any insn whose RTL description
+has the form shown may be handled according to this pattern.  The name
+@samp{tstsi} means ``test a @code{SImode} value'' and tells the RTL generation
+pass that, when it is necessary to test such a value, an insn to do so
+can be constructed using this pattern.
+
+The output control string is a piece of C code which chooses which
+output template to return based on the kind of operand and the specific
+type of CPU for which code is being generated.
+
+@samp{"rm"} is an operand constraint.  Its meaning is explained below.
+
+@node Constraints, Standard Names, Example, Machine Desc
+@section Operand Constraints
+
+Each @samp{match_operand} in an instruction pattern can specify a
+constraint for the type of operands allowed.  Constraints can say whether
+an operand may be in a register, and which kinds of register; whether the
+operand can be a memory reference, and which kinds of address; whether the
+operand may be an immediate constant, and which possible values it may
+have.  Constraints can also require two operands to match.
+
+@menu
+* Simple Constraints::  Basic use of constraints.
+* Multi-alternative::   When an insn has two alternative constraint-patterns.
+* Class Preferences::   Constraints guide which hard register to put things in.
+* Modifiers::           More precise control over effects of constraints.
+* No Constraints::      Describing a clean machine without constraints.
+@end menu
+
+@node Simple Constraints, Multi-Alternative, Constraints, Constraints
+@subsection Simple Constraints
+
+The simplest kind of constraint is a string full of letters, each of
+which describes one kind of operand that is permitted.  Here are
+the letters that are allowed:
+
+@table @samp
+@item m
+A memory operand is allowed, with any kind of address that the machine
+supports in general.
+
+@item o
+A memory operand is allowed, but only if the address is @dfn{offsetable}.
+This means that adding a small integer (actually, the width in bytes of the
+operand, as determined by its machine mode) may be added to the address
+and the result is also a valid memory address.  For example, an address
+which is constant is offsetable; so is an address that is the sum of
+a register and a constant (as long as a slightly larger constant is also
+within the range of address-offsets supported by the machine); but an
+autoincrement or autodecrement address is not offsetable.  More complicated
+indirect/indexed addresses may or may not be offsetable depending on the
+other addressing modes that the machine supports.
+
+@item <
+A memory operand with autodecrement addressing (either predecrement or
+postdecrement) is allowed.
+
+@item >
+A memory operand with autoincrement addressing (either preincrement or
+postincrement) is allowed.
+
+@item r
+A register operand is allowed provided that it is in a general register.
+
+@item d
+@itemx a
+@itemx f
+@itemx @dots{}
+Other letters can be defined in machine-dependent fashion to stand for
+particular classes of registers.  @samp{d}, @samp{a} and @samp{f} are
+defined on the 68000/68020 to stand for data, address and floating point
+registers.
+
+@item i
+An immediate integer operand (one with constant value) is allowed.
+
+@item I
+@item J
+@item K
+@itemx @dots{}
+Other letters in the range @samp{I} through @samp{M} may be defined in a
+machine-dependent fashion to permit immediate integer operands with
+explicit integer values in specified ranges.  For example, on the 68000,
+@samp{I} is defined to stand for the range of values 1 to 8.  This is the
+range permitted as a shift count in the shift instructions.
+
+@item F
+An immediate floating operand (expression code @samp{const_double}) is
+allowed.
+
+@item G
+@itemx H
+@samp{G} and @samp{H} may be defined in a machine-dependent fashion to
+permit immediate floating operands in particular ranges of values.
+
+@item s
+An immediate integer operand whose value is not an explicit integer is
+allowed.  This might appear strange; if an insn allows a constant operand
+with a value not known at compile time, it certainly must allow any known
+value.  So why use @samp{s} instead of @samp{i}?  Sometimes it allows
+better code to be generated.  For example, on the 68000 in a fullword
+instruction it is possible to use an immediate operand; but if the
+immediate value is between -32 and 31, better code results from loading the
+value into a register and using the register.  This is because the load
+into the register can be done with a @samp{moveq} instruction.  We arrange
+for this to happen by defining the letter @samp{K} to mean ``any integer
+outside the range -32 to 31'', and then specifying @samp{Ks} in the operand
+constraints.
+
+@item g
+Any register, memory or immediate integer operand is allowed, except for
+registers that are not general registers.
+
+@item @r{@var{n}, a digit}
+An operand identical to operand number @var{n} is allowed.
+If a digit is used together with letters, the digit should come last.
+
+@item p
+An operand that is a valid memory address is allowed.  This is
+for ``load address'' and ``push address'' instructions.
+
+If @samp{p} is used in the constraint, the test-function in the
+@samp{match_operand} must be @code{address_operand}.
+@end table
+
+In order to have valid assembler code, each operand must satisfy
+its constraint.  But a failure to do so does not prevent the pattern
+from applying to an insn.  Instead, it directs the compiler to modify
+the code such that the constraint will be satisfied.  Usually this is
+done by copying an operand into a register.
+
+Contrast, therefore, the two instruction patterns that follow:
+
+@example
+(define_insn ""
+  [(set (match_operand:SI 0 "general_operand" "r")
+        (plus:SI (match_dup 0)
+                 (match_operand:SI 1 "general_operand" "r")))]
+  ""
+  "@dots{}")
+@end example
+
+@noindent
+which has two operands, one of which must appear in two places, and
+
+@example
+(define_insn ""
+  [(set (match_operand:SI 0 "general_operand" "r")
+        (plus:SI (match_operand:SI 1 "general_operand" "0")
+                 (match_operand:SI 2 "general_operand" "r")))]
+  ""
+  "@dots{}")
+@end example
+
+@noindent
+which has three operands, two of which are required by a constraint to be
+identical.  If we are considering an insn of the form
+
+@example
+(insn @var{n} @var{prev} @var{next}
+  (set (reg:SI 3)
+       (plus:SI (reg:SI 6) (reg:SI 109)))
+  @dots{})
+@end example
+
+@noindent
+the first pattern would not apply at all, because this insn does not
+contain two identical subexpressions in the right place.  The pattern would
+say, ``That does not look like an add instruction; try other patterns.''
+The second pattern would say, ``Yes, that's an add instruction, but there
+is something wrong with it.''  It would direct the reload pass of the
+compiler to generate additional insns to make the constraint true.  The
+results might look like this:
+
+@example
+(insn @var{n2} @var{prev} @var{n}
+  (set (reg:SI 3) (reg:SI 6))
+  @dots{})
+
+(insn @var{n} @var{n2} @var{next}
+  (set (reg:SI 3)
+       (plus:SI (reg:SI 3) (reg:SI 109)))
+  @dots{})
+@end example
+
+Because insns that don't fit the constraints are fixed up by loading
+operands into registers, every instruction pattern's constraints must
+permit the case where all the operands are in registers.  It need not
+permit all classes of registers; the compiler knows how to copy registers
+into other registers of the proper class in order to make an instruction
+valid.  But if no registers are permitted, the compiler will be stymied: it
+does not know how to save a register in memory in order to make an
+instruction valid.  Instruction patterns that reject registers can be
+made valid by attaching a condition-expression that refuses to match
+an insn at all if the crucial operand is a register.
+
+@node Multi-Alternative, Class Preferences, Simple Constraints, Constraints
+@subsection Multiple Alternative Constraints
+
+Sometimes a single instruction has multiple alternative sets of possible
+operands.  For example, on the 68000, a logical-or instruction can combine
+register or an immediate value into memory, or it can combine any kind of
+operand into a register; but it cannot combine one memory location into
+another.
+
+These constraints are represented as multiple alternatives.  An alternative
+can be described by a series of letters for each operand.  The overall
+constraint for an operand is made from the letters for this operand
+from the first alternative, a comma, the letters for this operand from
+the second alternative, a comma, and so on until the last alternative.
+Here is how it is done for fullword logical-or on the 68000:
+
+@example
+(define_insn "iorsi3"
+  [(set (match_operand:SI 0 "general_operand" "=%m,d")
+	(ior:SI (match_operand:SI 1 "general_operand" "0,0")
+		(match_operand:SI 2 "general_operand" "dKs,dmKs")))]
+  @dots{})
+@end example
+
+The first alternative has @samp{m} (memory) for operand 0, @samp{0} for
+operand 1 (meaning it must match operand 0), and @samp{dKs} for operand 2.
+The second alternative has @samp{d} (data register) for operand 0, @samp{0}
+for operand 1, and @samp{dmKs} for operand 2.  The @samp{=} and @samp{%} in
+the constraint for operand 0 are not part of any alternative; their meaning
+is explained in the next section.
+
+If all the operands fit any one alternative, the instruction is valid.
+Otherwise, for each alternative, the compiler counts how many instructions
+must be added to copy the operands so that that alternative applies.
+The alternative requiring the least copying is chosen.  If two alternatives
+need the same amount of copying, the one that comes first is chosen.
+These choices can be altered with the @samp{?} and @samp{!} characters:
+
+@table @samp
+@item ?
+Disparage slightly the alternative that the @samp{?} appears in,
+as a choice when no alternative applies exactly.  The compiler regards
+this alternative as one unit more costly for each @samp{?} that appears
+in it.
+
+@item !
+Disparage severely the alternative that the @samp{!} appears in.
+When operands must be copied into registers, the compiler will
+never choose this alternative as the one to strive for.
+@end table
+
+@node Class Preferences, Modifiers, Multi-Alternative, Constraints
+@subsection Register Class Preferences
+
+The operand constraints have another function: they enable the compiler
+to decide which kind of hardware register a pseudo register is best
+allocated to.  The compiler examines the constraints that apply to the
+insns that use the pseudo register, looking for the machine-dependent
+letters such as @samp{d} and @samp{a} that specify classes of registers.
+The pseudo register is put in whichever class gets the most ``votes''.
+The constraint letters @samp{g} and @samp{r} also vote: they vote in
+favor of a general register.  The machine description says which registers
+are considered general.
+
+Of course, on some machines all registers are equivalent, and no register
+classes are defined.  Then none of this complexity is relevant.
+
+@node Modifiers, No Constraints, Class Preferences, Constraints
+@subsection Constraint Modifier Characters
+
+@table @samp
+@item =
+Means that this operand is written by the instruction, but its previous
+value is not used.
+
+@item +
+Means that this operand is both read and written by the instruction.
+
+When the compiler fixes up the operands to satisfy the constraints,
+it needs to know which operands are inputs to the instruction and
+which are outputs from it.  @samp{=} identifies an output; @samp{+}
+identifies an operand that is both input and output; all other operands
+are assumed to be input only.
+
+@item %
+Declares the instruction to be commutative for operands 1 and 2.
+This means that the compiler may interchange operands 1 and 2
+if that will make the operands fit their constraints.
+
+@item #
+Says that all following characters, up to the next comma, are to be ignored
+as a constraint.  They are significant only for choosing register preferences.
+
+@item *
+Says that the following character should be ignored when choosing
+register preferences.  @samp{*} has no effect on the meaning of
+the constraint as a constraint.
+@end table
+
+@node No Constraints,, Modifiers, Constraints
+@subsection Not Using Constraints
+
+Some machines are so clean that operand constraints are not required.  For
+example, on the Vax, an operand valid in one context is valid in any other
+context.  On such a machine, every operand constraint would be @samp{"g"},
+excepting only operands of ``load address'' instructions which are
+written as if they referred to a memory location's contents but actual
+refer to its address.  They would have constraint @samp{"p"}.
+
+For such machines, instead of writing @samp{"g"} and @samp{"p"} for all
+the constraints, you can choose to write a description with empty constraints.
+Then you write @samp{""} for the constraint in every @samp{match_operand}.
+Address operands are identified by writing an @samp{address} expression
+around the @samp{match_operand}, not by their constraints.
+
+When the machine description has just empty constraints, certain parts
+of compilation are skipped, making the compiler faster.
+
+@node Standard Names, Dependent Patterns, Constraints, Machine Desc
+@section Standard Insn Names
+
+Here is a table of the instruction names that are meaningful in the RTL
+generation pass of the compiler.  Giving one of these names to an
+instruction pattern tells the RTL generation pass that it can use the
+pattern in to accomplish a certain task.
+
+@table @samp
+@item mov@var{m}
+Here @var{m} is a two-letter machine mode name, in lower case.  This
+instruction pattern moves data with that machine mode from operand 1 to
+operand 0.  For example, @samp{movsi} moves full-word data.
+
+If operand 0 is a @samp{subreg} with mode @var{m} of a register whose
+natural mode is wider than @var{m}, the effect of this instruction is
+to store the specified value in the part of the register that corresponds
+to mode @var{m}.  The effect on the rest of the register is undefined.
+
+@item movstrict@var{m}
+Like @samp{mov@var{m}} except that if operand 0 is a @samp{subreg}
+with mode @var{m} of a register whose natural mode is wider,
+the @samp{movstrict@var{m}} instruction is guaranteed not to alter
+any of the register except the part which belongs to mode @var{m}.
+
+@item add@var{m}3
+Add operand 2 and operand 1, storing the result in operand 0.  All operands
+must have mode @var{m}.  This can be used even on two-address machines, by
+means of constraints requiring operands 1 and 0 to be the same location.
+
+@item sub@var{m}3
+@itemx mul@var{m}3
+@itemx umul@var{m}3
+@itemx div@var{m}3
+@itemx udiv@var{m}3
+@itemx mod@var{m}3
+@itemx umod@var{m}3
+@itemx and@var{m}3
+@itemx ior@var{m}3
+@itemx xor@var{m}3
+Similar, for other arithmetic operations.
+
+@item andcb@var{m}3
+Bitwise logical-and operand 1 with the complement of operand 2
+and store the result in operand 0.
+
+@item mulhisi3
+Multiply operands 1 and 2, which have mode @code{HImode}, and store
+a @code{SImode} product in operand 0.
+
+@item mulqihi3
+@itemx mulsidi3
+Similar widening-multiplication instructions of other widths.
+
+@item umulqihi3
+@item umulhisi3
+@item umulsidi3
+Similar widening-multiplication instructions that do unsigned
+multiplication.
+
+@item divmod@var{m}4
+Signed division that produces both a quotient and a remainder.
+Operand 1 is divided by operand 2 to produce a quotient stored
+in operand 0 and a remainder stored in operand 3.
+
+@item udivmod@var{m}4
+Similar, but does unsigned division.
+
+@item divmod@var{m}@var{n}4
+Like @samp{divmod@var{m}4} except that only the dividend has mode
+@var{m}; the divisor, quotient and remainder have mode @var{n}.
+For example, the Vax has a @samp{divmoddisi4} instruction
+(but it is omitted from the machine description, because it
+is so slow that it is faster to compute remainders by the
+circumlocution that the compiler will use if this instruction is
+not available).
+
+@item ashl@var{m}3
+Arithmetic-shift operand 1 left by a number of bits specified by
+operand 2, and store the result in operand 0.  Operand 2 has
+mode @code{SImode}, not mode @var{m}.
+
+@item ashr@var{m}3
+@itemx lshl@var{m}3
+@itemx lshr@var{m}3
+@itemx rotl@var{m}3
+@itemx rotr@var{m}3
+Other shift and rotate instructions.
+
+@item neg@var{m}2
+Negate operand 1 and store the result in operand 0.
+
+@item abs@var{m}2
+Store the absolute value of operand 1 into operand 0.
+
+@item sqrt@var{m}2
+Store the square root of operand 1 into operand 0.
+
+@item one_cmpl@var{m}2
+Store the bitwise-complement of operand 1 into operand 0.
+
+@item cmp@var{m}
+Compare operand 0 and operand 1, and set the condition codes.
+
+@item tst@var{m}
+Compare operand 0 against zero, and set the condition codes.
+
+@item movstr@var{m}
+Block move instruction.  The addresses of the destination and source
+strings are the first two operands, and both are in mode @code{Pmode}.
+The number of bytes to move is the third operand, in mode @var{m}.
+
+@item cmpstr@var{m}
+Block compare instruction, with operands like @samp{movstr@var{m}}
+except that the two memory blocks are compared byte by byte
+in lexicographic order.  The effect of the instruction is to set
+the condition codes.
+
+@item float@var{m}@var{n}2
+Convert operand 1 (valid for floating point mode @var{m}) to fixed
+point mode @var{n} and store in operand 0 (which has mode @var{n}).
+
+@item fix@var{m}@var{n}2
+Convert operand 1 (valid for fixed point mode @var{m}) to floating
+point mode @var{n} and store in operand 0 (which has mode @var{n}).
+
+@item trunc@var{m}@var{n}
+Truncate operand 1 (valid for mode @var{m}) to mode @var{n} and
+store in operand 0 (which has mode @var{n}).  Both modes must be fixed
+point or both floating point.
+
+@item extend@var{m}@var{n}
+Sign-extend operand 1 (valid for mode @var{m}) to mode @var{n} and
+store in operand 0 (which has mode @var{n}).  Both modes must be fixed
+point or both floating point.
+
+@item zero_extend@var{m}@var{n}
+Zero-extend operand 1 (valid for mode @var{m}) to mode @var{n} and
+store in operand 0 (which has mode @var{n}).  Both modes must be fixed
+point.
+
+@item extv
+Extract a bit-field from operand 1 (a register or memory operand),
+where operand 2 specifies the width in bits and operand 3 the starting
+bit, and store it in operand 0.  Operand 0 must have @code{Simode}.
+Operand 1 may have mode @code{QImode} or @code{SImode}; often
+@code{SImode} is allowed only for registers.  Operands 2 and 3 must be
+valid for @code{SImode}.
+
+The RTL generation pass generates this instruction only with constants
+for operands 2 and 3.
+
+The bit-field value is sign-extended to a full word integer
+before it is stored in operand 0.
+
+@item extzv
+Like @samp{extv} except that the bit-field value is zero-extended.
+
+@item insv
+Store operand 3 (which must be valid for @code{SImode}) into a
+bit-field in operand 0, where operand 1 specifies the width in bits
+and operand 2 the starting bit.  Operand 0 may have mode @code{QImode}
+or @code{SImode}; often @code{SImode} is allowed only for registers.
+Operands 1 and 2 must be valid for @code{SImode}.
+
+The RTL generation pass generates this instruction only with constants
+for operands 1 and 2.
+
+@item s@var{cond}@var{m}
+Store zero or -1 in the operand (with mode @var{m}) according to the
+condition codes.  Value stored is -1 iff the condition @var{cond} is
+true.  @var{cond} is the name of a comparison operation rtx code, such
+as @samp{eq}, @samp{lt} or @samp{leu}.
+
+@item b@var{cond}
+Conditional branch instruction.  Operand 0 is a @samp{label_ref}
+that refers to the label to jump to.  Jump if the condition codes
+meet condition @var{cond}.
+
+@item call
+Subroutine call instruction.  Operand 1 is the number of arguments
+and operand 0 is the function to call.  Operand 1 should be a @samp{mem}
+rtx whose address is the address of the function.
+
+@item return
+Subroutine return instruction.  This instruction pattern name should be
+defined only if a single instruction can do all the work of returning
+from a function.
+
+@item tablejump
+@item case@var{m}
+@end table
+
+@node Dependent Patterns,, Standard Names, Machine Desc
+@section Patterns Require Other Patterns
+
+Every machine description must have a named pattern for each of the
+conditional branch names @samp{b@var{cond}}.  The recognition template
+must always have the form
+
+@example
+(set (pc)
+     (if_then_else (@var{cond} (cc0) (const_int 0))
+                   (label_ref (match_operand 0 "" ""))
+                   (pc)))
+@end example
+
+@noindent
+In addition, every machine description must have an anonymous pattern
+for each of the possible reverse-conditional branches.  These patterns
+look like
+
+@example
+(set (pc)
+     (if_then_else (@var{cond} (cc0) (const_int 0))
+                   (pc)
+                   (label_ref (match_operand 0 "" ""))))
+@end example
+
+@noindent
+They are necessary because jump optimization can turn direct-conditional
+branches into reverse-conditional branches.
+
+The compiler does more with RTL than just create it from patterns
+and recognize the patterns: it can perform arithmetic expression codes
+when constant values for their operands can be determined.  As a result,
+sometimes having one pattern can require other patterns.  For example, the
+Vax has no `and' instruction, but it has `and not' instructions.  Here
+is the definition of one of them:
+
+@example
+(define_insn "andcbsi2"
+  [(set (match_operand:SI 0 "general_operand" "")
+        (and:SI (match_dup 0)
+                (not:SI (match_operand:SI
+                          1 "general_operand" ""))))]
+  ""
+  "bicl2 %1,%0")
+@end example
+
+@noindent
+If operand 1 is an explicit integer constant, an instruction constructed
+using that pattern can end up looking like
+
+@example
+(set (reg:SI 41)
+     (and:SI (reg:SI 41)
+             (const_int 0xffff7fff)))
+@end example
+
+@noindent
+(where the integer constant is the one's complement of what
+appeared in the original instruction).
+
+To avoid a fatal error, the compiler must have a pattern that recognizes
+such an instruction.  Here is what is used:
+
+@example
+(define_insn ""
+  [(set (match_operand:SI 0 "general_operand" "")
+        (and:SI (match_dup 0)
+                (match_operand:SI 1 "general_operand" "")))]
+  "GET_CODE (operands[1]) == CONST_INT"
+  "*
+{ operands[1]
+    = gen_rtx (CONST_INT, VOIDmode, ~INTVAL (operands[1]));
+  return \"bicl2 %1,%0\";
+}")
+@end example
+
+@noindent
+Whereas a pattern to match a general `and' instruction is impossible to
+support on the Vax, this pattern is possible because it matches only a
+constant second argument: a special case that can be output as an `and not'
+instruction.
+
+@node Machine Macros,, Machine Desc, Top
+@chapter Machine Description Macros
+
+The other half of the machine description is a C header file conventionally
+given the name @file{tm-@var{machine}.h}.  The file @file{tm.h} should be a
+link to it.  The header file @file{config.h} includes @file{tm.h} and most
+compiler source files include @file{config.h}.
+
+@menu
+* Run-time Target::     Defining -m switches like -m68000 and -m68020.
+* Storage Layout::      Defining sizes and alignments of data types.
+* Registers::           Naming and describing the hardware registers.
+* Register Classes::    Defining the classes of hardware registers.
+* Stack Layout::        Defining which way the stack grows and by how much.
+* Addressing Modes::    Defining addressing modes valid for memory operands.
+* Condition Code::      Defining how insns update the condition code.
+* Assembler Format::    Defining how to write insns and pseudo-ops to output.
+* Misc::                Everything else.
+@end menu
+
+@node Run-time Target, Storage Layout, Machine Macros, Machine Macros
+@section Run-time Target Specification
+
+@table @code
+@item CPP_PREDEFINES
+Define this to be a string constant containing @samp{-D} switches
+to define the predefined macros that identify this machine and system.
+
+For example, on the Sun, one can use the value
+
+@example
+"-Dmc68000 -Dsun"
+@end example
+
+@item extern int target_flags;
+This declaration should be present.
+
+@item TARGET_@dots{}
+This series of macros is to allow compiler command arguments to
+enable or disable the use of optional features of the target machine.
+For example, one machine description serves both the 68000 and
+the 68020; a command argument tells the compiler whether it should
+use 68020-only instructions or not.  This command argument works
+by means of a macro @code{TARGET_68020} that tests a bit in
+@code{target_flags}.
+
+Define a macro @code{TARGET_@var{featurename}} for each such option.
+Its definition should test a bit in @code{target_flags}; for example:
+
+@example
+#define TARGET_68020 (target_flags & 1)
+@end example
+
+One place where these macros are used is in the condition-expressions
+of instruction patterns.  Note how @code{TARGET_68020} appears
+frequently in the 68000 machine description file, @file{m68000.md}.
+Another place they are used is in the definitions of the other
+macros in the @file{tm-@var{machine}.h} file.
+
+@item TARGET_SWITCHES
+This macro defines names of command switches to set and clear
+bits in @code{target_flags}.  Its definition is an initializer
+with a subgrouping for each command switches.
+
+Each subgrouping contains a string constant, that defines the switch
+name, and a number, which contains the bits to set in
+@code{target_flags}.  A negative number says to clear bits instead;
+the negative of the number is which bits to clear.  The actual switch
+name is made by appending @samp{-m} to the specified name.
+
+One of the subgroupings should have a null string.  The number in
+this grouping is the default value for @code{target_flags}.  Any
+target switches act starting with that value.
+
+Here is an example which defines @samp{-m68000} and @samp{-m68020}
+with opposite meanings, and picks the latter as the default:
+
+@example
+#define TARGET_SWITCHES \
+  @{ @{ "68020", 1@},      \
+    @{ "68000", -1@},     \
+    @{ "", 1@}@}
+@end example
+@end table
+
+@node Storage Layout, Registers, Run-time Target, Machine Macros
+@section Storage Layout
+
+@table @code
+@item BITS_BIG_ENDIAN
+Define this macro if the most significant bit in a byte has the lowest
+number.  This means that bit-field instructions count from the most
+significant bit.  If the machine has no bit-field instructions, this
+macro is irrelevant.
+
+@item BYTES_BIG_ENDIAN
+Define this macro if the most significant byte in a word has the
+lowest number.
+
+@item WORDS_BIG_ENDIAN
+Define this macro if, in a multiword object, the most signficant
+word has the lowest number.
+
+@item BITS_PER_UNIT
+Number of bits in an addressable storage unit (byte); normally 8.
+
+@item BITS_PER_WORD
+Number of bits in a word; normally 32.
+
+@item UNITS_PER_WORD
+Number of storage units in a word; normally 4.
+
+@item POINTER_SIZE
+Width of a pointer, in bits.
+
+@item PARM_BOUNDARY
+Alignment required for pointers, in bits.
+
+@item FUNCTION_BOUNDARY
+Alignment required for a function entry point, in bits.
+
+@item BIGGEST_ALIGNMENT
+Biggest alignment that anything can require on this machine, in bits.
+
+@item STRICT_ALIGNMENT
+Define this if instructions will fail to work if given data not
+on the nominal alignment.  If instructions will merely go slower
+in that case, do not define this macro.
+@end table
+
+@node Registers, Register Classes, Storage Layout, Machine Macros
+@section Register Usage
+
+@table @code
+@item FIRST_PSEUDO_REGISTER
+Number of hardware registers known to the compiler.  They receive
+numbers 0 through @code{FIRST_PSEUDO_REGISTER-1}; thus, the first
+pseudo register's number really is assigned the number7
+@code{FIRST_PSEUDO_REGISTER}.
+
+@item FIXED_REGISTERS
+An initializer that says which registers are used for fixed purposes
+all throughout the compiled code and are therefore not available for
+general allocation.  These would inclue the stack pointer, the frame
+pointer, the program counter on machines where that is considered one
+of the addressable registers, and any other numbered register with a
+standard use.
+
+This information is expressed as a sequence of numbers, separated by
+commas and surrounded by braces.  The @var{n}th number is 1 if
+register @var{n} is fixed, 0 otherwise
+
+@item CALL_USED_REGISTERS
+Like @code{FIXED_REGISTERS} but has 1 for each register that is
+clobbered (in general) by function calls as well as for fixed
+registers.  This macro therefore identifies the registers that are not
+available for general allocation of values that must live across
+function calls.
+
+If a registers has 0 in @code{CALL_USED_REGISTERS}, the compiler
+automatically saves it on function entry and restores it on function
+exit, if the register is used within the function.
+
+@item HARD_REGNO_REGS (@var{regno}, @var{mode})
+A C expression for the number of consecutive hard registers, starting
+at register number @var{regno}, required to hold a value of mode
+@var{mode}.
+
+On a machine where all registers are exactly one word, a suitable
+definition of this macro is
+
+@example
+#define HARD_REGNO_NREGS(REGNO, MODE)            \
+   ((GET_MODE_SIZE (MODE) + UNITS_PER_WORD - 1)  \
+    / UNITS_PER_WORD))
+@end example
+
+@item HARD_REGNO_MODE_OK (@var{regno}, @var{mode})
+A C expression that is nonzero if it is permissible to store a value
+of mode @var{mode} in hard register number @var{regno} (or in several
+registers starting with that one).  For a machine where all registers
+are equivalent, a suitable definition is
+
+@example
+#define HARD_REGNO_MODE_OK(REGNO, MODE) 1
+@end example
+
+It is not necessary for this macro to check for fixed register numbers
+because the allocation mechanism considers them to be always occupied.
+
+@item MODES_TIEABLE_P (@var{mode1}, @var{mode2})
+A C expression that is nonzero if it is desirable to choose register
+allocation so as to avoid move instructions between a value of mode
+@var{mode1} and a value of mode @var{mode2}.
+
+If @code{HARD_REGNO_MODE_OK (@var{r}, @var{mode1})} and
+@code{HARD_REGNO_MODE_OK (@var{r}, @var{mode2})} are ever different
+for any @var{r}, then @code{MODES_TIEABLE_P (@var{mode1},
+@var{mode2})} must be zero.
+
+@item PC_REGNUM
+If the program counter has a register number, define this as that
+register number.  Otherwise, do not define it.
+
+@item STACK_POINTER_REGNUM
+The register number of the stack pointer register, which must also be
+a fixed register according to @code{FIXED_REGISTERS}.  On many
+machines, the hardware determines which register this is.
+
+@item FRAME_POINTER_REGNUM
+The register number of the frame pointer register, which is used to
+access automatic variables in the stack frame.  It must also described
+in @code{FIXED_REGISTERS} as a fixed register.  On some machines, the
+hardware determines which register this is.  On other machines, you
+can choose any register you wish for this purpose.
+
+@item ARG_POINTER_REGNUM
+The register number of the arg pointer register, which is used to
+access the function's argument list.  On some machines, this is the
+same as the frame pointer register.  On some machines, the hardware
+determines which register this is.  On other machines, you can choose
+any register you wish for this purpose.  It must in any case be a
+fixed register according to @code{FIXED_REGISTERS}.
+
+@item STATIC_CHAIN_REGNUM
+The register number used for passing a function's static chain
+pointer.  This is needed for languages such as Pascal and Algol where
+functions defined within other functions can access the local
+variables of the outer functions; it is not currently used because C
+does not provide this feature.
+
+The static chain register need not be a fixed register.
+
+@item FUNCTION_VALUE_REGNUM
+The register number used for returning values from a function.  This
+must be one of the call-used registers (since function calls alter
+it!) but should not be a fixed register.  When the value being
+returned has a multi-word machine mode, multiple consecutive registers
+starting with the specified one are used.
+
+@item STRUCT_VALUE_REGNUM
+When a function's value's mode is @code{BLKmode}, the value is not returned
+in the register @code{FUNCTION_VALUE_REGNUM}.  Instead, the caller passes
+the address of a block of memory in which the value should be stored.
+@code{STRUCT_VALUE_REGNUM} is the register in which this address is passed.
+@end table
+
+@node Register Classes, Stack Layout, Registers, Machine Macros
+@section Register Classes
+
+On many machines, the numbered registers are not all equivalent.
+For example, certain registers may not be allowed for indexed addressing;
+certain registers may not be allowed in some instructions.  These machine
+restrictions are described to the compiler using @dfn{register classes}.
+
+You define a number of register classes, giving each one a name and saying
+which of the registers belong to it.  Then you can specify register classes
+that are allowed as operands to particular instruction patterns.
+
+In general, each register will belong to several classes.  In fact, one
+class must be named @code{ALL_REGS} and contain all the registers.  Another
+class must be named @code{NO_REGS} and contain no registers.  Often the
+union of two classes will be another class; however, this is not required.
+
+One of the classes must be named @code{GENERAL_REGS}.  There is nothing
+terribly special about the name, but the operand constraint letters
+@samp{r} and @samp{g} specify this class.  If @code{GENERAL_REGS} is
+the same as @code{ALL_REGS}, just define it as a macro which expands
+to @code{ALL_REGS}.
+
+The way classes other than @code{GENERAL_REGS} are specified in operand
+constraints is through machine-dependent operand constraint letters.
+You can define such letters to correspond to various classes, then use
+them in operand constraints.
+
+You must also specify certain redundant information about the register
+classes: for each class, which classes contain it and which ones are
+contained in it; for each pair of classes, the largest class contained
+in their union.
+
+@table @code
+@item enum reg_class
+An enumeral type that must be defined with all the register class names
+as enumeral values.  @code{NO_REGS} must be first.  @code{ALL_REGS}
+must be the last register class, followed by one more enumeral value,
+@code{LIM_REG_CLASSES}, which is not a register class but rather
+tells how many classes there are.
+
+Each register class has a number, which is the value of casting
+the class name to type @code{int}.  The number serves as an index
+in many of the tables described below.
+
+@item REG_CLASS_NAMES
+An initializer containing the names of the register classes as C string
+constants.  These names are used in writing some of the debugging dumps.
+
+@item REG_CLASS_CONTENTS
+An initializer containing the contents of the register classes, as integers
+which are bit masks.  The @var{n}th integer specifies the contents of class
+@var{n}.  The way the integer @var{mask} is interpreted is that
+register @var{r} is in the class if @code{@var{mask} & (1 << @var{r})} is 1.
+
+When the machine has more than 32 registers, an integer does not suffice.
+Then the integers are replaced by sub-initializers, braced groupings containing
+several integers.  Each sub-initializer must be suitable as an initializer
+for the type @code{HARD_REG_SET} which is defined in @file{hard-reg-set.h}.
+
+@item REGNO_REG_CLASS (@var{regno})
+A C expression whose value is a register class containing hard register
+@var{regno}.  In general there is more that one such class; choose a class
+which is @dfn{minimal}, meaning that no smaller class also contains the
+register.
+
+@item REG_CLASS_SUPERCLASSES
+A two-level initializer that says, for each class, which classes contain
+it.  The @var{n}th element of the initializer is a sub-initializer for
+class @var{n}; it contains the names of the othe classes that contain class
+@var{n} (but not the name of class @var{n} itself), followed by
+@code{LIM_REG_CLASSES} to mark the end of the element.
+
+@item REG_CLASS_SUBCLASSES
+Similar to @code{REG_CLASS_SUPERCLASSES}, except that element @var{n} lists
+the classes @emph{contained in} class @var{n}, followed once again by
+@code{LIM_REG_CLASSES} to mark the end of the element.
+
+@item REG_CLASS_SUBUNION
+An two-level initializer for a two-dimensional array.  The element
+(@var{m}, @var{n}) of this array must be a class that is ``close to''
+being the union of classes @var{m} and @var{n}.  If there is a class
+that is exactly that union, use it; otherwise, choose some smaller
+class, preferably as large as possible but certainly not containing
+any register that is neither in class @var{m} nor in class @var{n}.
+
+@item INDEX_REG_CLASS
+A macro whose definition is the name of the class to which a valid index
+register must belong.
+
+@item REG_CLASS_FROM_LETTER (@var{char})
+A C expression which defines the machine-dependent operand constraint
+letters for register classes.  If @var{char} is such a letter, the value
+should be the register class corresponding to it.  Otherwise, the value
+should be @code{NO_REGS}.
+
+@item REGNO_OK_FOR_CLASS_P (@var{regno}, @var{class})
+A C expression which is nonzero if register number @var{regno} is a hard
+register belonging to class @var{class}.  The expression is always zero if
+@var{regno} is a pseudo register.
+
+@item REG_OK_FOR_CLASS_P (@var{reg}, @var{class})
+A C expression which is nonzero if @var{reg} (an rtx assumed to have
+code @samp{reg}) belongs to class @var{class}.
+
+What about pseudo registers?  There are two alternatives, and the machine
+description header file must be able to do either one on command.  If the
+macro @code{REG_OK_STRICT} is defined, this macro should be defined to
+reject all pseudo registers (return 0 for them).  Otherwise, this macro
+should be defined to accept all pseudo registers (return 1 for them).
+
+Some source files of the compiler define @code{REG_OK_STRICT} before
+including the machine description header file, while others do not,
+according to the needs of that part of the compiler.
+
+@item PREFERRED_RELOAD_CLASS (@var{x}, @var{class})
+A C expression that places additional restrictions on the register class
+to use when it is necessary to copy value @var{x} into a register in class
+@var{class}.  The value is a register class; perhaps @var{class}, or perhaps
+another, smaller class.  @var{class} is always safe as a value.  In fact,
+the definition
+
+@example
+#define PREFERRED_RELOAD_CLASS(X,CLASS) CLASS
+@end example
+
+@noindent
+is always safe.  However, sometimes returning a more restrictive class
+makes better code.  For example, on the 68000, when @var{x} is an
+integer constant that is in range for a @samp{moveq} instruction,
+the value of this macro is always @code{DATA_REGS} as long as
+@var{class} includes the data registers.  Requiring a data register
+guarantees that a @samp{moveq} will be used.
+@end table
+
+Two other special macros
+
+@table @code
+@item CONST_OK_FOR_LETTER_P (@var{value}, @var{c})
+A C expression that defines the machine-dependent operand constraint letters
+that specify particular ranges of integer values.  If @var{c} is one
+of those letters, the expression should check that @var{value}, an integer,
+is in the appropriate range and return 1 if so, 0 otherwise.  If @var{c} is
+not one of those letters, the value should be 0 regardless of @var{value}.
+
+@item CONST_DOUBLE_OK_FOR_LETTER_P (@var{value}, @var{c})
+A C expression that defines the machine-dependent operand constraint
+letters that specify particular ranges of floating values.  If @var{c} is
+one of those letters, the expression should check that @var{value}, an rtx
+of code @samp{const_double}, is in the appropriate range and return 1 if
+so, 0 otherwise.  If @var{c} is not one of those letters, the value should
+be 0 regardless of @var{value}.
+@end table
+
+@node Stack Layout, Addressing Modes, Register Classes, Machine Macros
+@section Describing Stack Layout
+
+@table @code
+@item STACK_GROWS_DOWNWARD
+Define this macro if pushing a word onto the stack moves the stack
+pointer to a smaller address.  The definition is irrelevant because the
+compiler checks this macro with @code{#ifdef}.
+
+@item FRAME_GROWS_DOWNWARD
+Define this macro if the addresses of local variable slots are at negative
+offsets from the frame pointer.
+
+@item STARTING_FRAME_OFFSET
+Offset from the frame pointer to the first local variable slot to be allocated.
+
+If @code{FRAME_GROWS_DOWNWARD}, the next slot's offset is found by
+subtracting the length of the first slot from @code{STARTING_FRAME_OFFSET}.
+Otherwise, it is found by adding the length of the first slot to
+the value @code{STARTING_FRAME_OFFSET}.
+
+@item PUSH_ROUNDING (@var{npushed})
+A C expression that is the number of bytes actually pushed onto the
+stack when an instruction attempts to push @var{npushed} bytes.
+
+On some machines, the definition
+
+@example
+#define PUSH_ROUNDING(BYTES) (BYTES)
+@end example
+
+@noindent
+will suffice.  But on other machines, instructions that appear
+to push one byte actually push two bytes in an attempt to maintain
+alignment.  Then the definition should be
+
+@example
+#define PUSH_ROUNDING(BYTES) (((BYTES) + 1) & ~1)
+@end example
+
+@item FIRST_PARM_OFFSET
+Offset from the argument pointer register to the first argument's address.
+
+@item RETURN_POPS_ARGS
+Define this macro if returning from a function automatically pops the
+function's arguments.  Do not define it if the caller must pop them.
+
+@item FUNCTION_PROLOGUE (@var{file}, @var{size})
+A C compound statement that outputs the assembler code for entry to a
+function.  The prologue is responsible for setting up the stack frame,
+initializing the frame pointer register, saving registers that must be
+saved, and allocating @var{size} additional bytes of storage for the local
+variables.  @var{size} is an integer.  @var{file} is a stdio stream to
+which the assembler code should be output.
+
+The label for the beginning of the function need not be output by this
+macro.  That has already been done when the macro is run.
+
+To determine which registers to save, the macro can refer to the array
+@code{regs_ever_live}: element @var{r} is nonzero if hard register @var{r}
+is used anywhere within the function.  This implies the function prologue
+should save register @var{r}, but not if it is one of the call-used
+registers.
+
+@item FUNCTION_EPILOGUE (@var{file}, @var{size})
+A C compound statement that outputs the assembler code for exit from a
+function.  The epilogue is responsible for restoring the saved
+registers and stack pointer to their values when the function was
+called, and returning control to the caller.  This macro takes the
+same arguments as the macro @code{FUNCTION_PROLOGUE}, and the
+registers to restore are determined from @code{regs_ever_live} and
+@code{CALL_USED_REGISTERS} in the same way.
+
+On some machines, there is a single instruction that does all the work of
+returning from the function.  On these machines, give that instruction the
+name @samp{return} and do not define the macro @code{FUNCTION_EPILOGUE} at
+all.
+@end table
+
+@node Addressing Modes, Misc, Stack Layout, Machine Macros
+@section Addressing Modes
+
+@table @code
+@item HAVE_POST_INCREMENT
+Define this macro if the machine supports post-increment addressing.
+
+@item HAVE_PRE_INCREMENT
+@itemx HAVE_POST_DECREMENT
+@itemx HAVE_PRE_DECREMENT
+Similar for other kinds of addressing.
+
+@item CONSTANT_ADDRESS_P (@var{x})
+A C expression that is 1 if the rtx @var{x} is a constant whose value
+is an integer.  This includes integers whose values are not explicitly
+known, such as @samp{symbol_ref} and @samp{label_ref} expressions
+and @samp{const} arithmetic expressions.
+
+@item MAX_REGS_PER_ADDRESS
+A number, the maximum number of registers that can appear in a valid
+memory address.
+
+@item GO_IF_LEGITIMATE_ADDRESS (@var{mode}, @var{x}, @var{label})
+A C compound statement with a conditional @code{goto @var{label};}
+executed if @var{x} (an rtx) is a legitimate memory address on
+the target machine for a memory operand of mode @var{mode}.
+
+It usually pays to define several simpler macros to serve as
+subroutines for this one.  Otherwise it may be too complicated
+to understand.
+
+@item LEGITIMIZE_ADDRESS (@var{x}, @var{oldx}, @var{mode}, @var{win})
+A C compound statement that attempts to replace @var{x} with a valid
+memory address for an operand of mode @var{mode}.  @var{win} will be
+a C statement label elsewhere in the code; the macro definition
+may use
+
+@example
+GO_IF_LEGITIMATE_ADDRESS (@var{mode}, @var{x}, @var{win});
+@end example
+
+@noindent
+to avoid further processing if the address has become legitimate.
+
+@var{x} will always be the result of a call to @code{break_out_memory_refs},
+and @var{oldx} will be the operand that was given to that function to produce
+@var{x}.
+
+The code generated by this macro should not alter the substructure of @var{x}.
+If it transforms @var{x} into a more legitimate form, it should assign @var{x}
+(which will always be a C variable) a new value.
+
+It is not necessary for this macro to come up with a legitimate address.
+The compiler has standard ways of doing so in all cases.  In fact, it is
+safe for this macro to do nothing.  But often a machine-dependent strategy
+can generate better code.
+@end table
+
+@node Misc, Condition Code, Addressing Modes, Machine Macros
+@section Miscellaneous Parameters
+
+@table @code
+@item CASE_VECTOR_MODE
+An alias for a machine mode name.  This is the machine mode that elements
+of a jump-table should have.
+
+@item CASE_VECTOR_PC_RELATIVE
+Define this macro if jump-tables should contain relative addresses.
+
+@item IMPLICIT_FIX_EXPR
+An alias for a tree code that should be used by default for conversion
+of floating point values to fixed point.  Normally, @code{FIX_ROUND_EXPR}
+is used.
+
+@item EASY_DIV_EXPR
+An alias for a tree code that is the easiest kind of division to compile
+code for in the general case.  It may be @code{TRUNC_DIV_EXPR},
+@code{FLOOR_DIV_EXPR}, @code{CEIL_DIV_EXPR} or @code{ROUND_DIV_EXPR}.
+These differ in how they round the result to an integer.
+@code{EASY_DIV_EXPR} is used when it is permissible to use any of those
+kinds of division and the choice should be made on the basis of efficiency.
+
+@item MOVE_MAX
+The maximum number of bytes that a single instruction can move quickly
+from memory to memory.
+
+@item SLOW_ZERO_EXTEND
+Define this macro if zero-extension (of chars or shorts to integers)
+can be done faster if the destination is a register that is known to be zero.
+
+@item SHIFT_COUNT_TRUNCATED
+Define this macro if shift instructions ignore all but the lowest few
+bits of the shift count.  It implies that a sign-extend or zero-extend
+instruction for the shift count can be omitted.
+
+@item TRULY_NOOP_TRUNCATON (@var{outprec}, @var{inprec})
+A C expression which is nonzero if on this machine it is safe to
+``convert'' an integer of @var{inprec} bits to one of @var{outprec} bits
+(where @var{outprec} is smaller than @var{inprec}) by merely operating
+on it as if it had only @var{inprec} bits.
+
+On many machines, this expression can be 1.
+
+@item Pmode
+An alias for the machine mode for pointers.  Normally the definition can be
+
+@example
+#define Pmode SImode
+@end example
+
+@item FUNCTION_MODE
+An alias for the machine mode used for memory references to functions being
+called, in @samp{call} RTL expressions.  On most machines this should be
+@code{QImode}.
+
+@item CONST_COST (@var{x}, @var{code})
+A part of a C @code{switch} statement that describes the relative costs of
+constant RTL expressions.  It must contain @code{case} labels for
+expression codes @samp{const_int}, @samp{const}, @samp{symbol_ref},
+@samp{label_ref} and @code{const_double}.  Each case must ultimately reach
+a @code{return} statement to return the relative cost of the use of that
+kind of constant value in an expression.  The cost may depend on the
+precise value of the constant, which is available for examination in
+@var{x}.
+
+@var{code} is the expression code---redundant, since it can be obtained with
+@code{GET_CODE (@var{x})}.
+@end table
+
+@node Condition Code, Assembler Format, Misc, Machine Macros
+@section Condition Code Information
+
+The file @file{conditions.h} defines a variable @code{cc_status} to
+describe how the condition code was computed (in case the interpretation of
+the condition code depends on the instruction that it was set by).  This
+variable contains the RTL expressions on which the condition code is
+currently based, and several standard flags.
+
+Sometimes additional machine-specific flags must be defined in the machine
+description header file.  It can also add additional machine-specific
+information by defining @code{CC_STATUS_MDEP}.
+
+@table @code
+@item CC_STATUS_MDEP
+A type, with which the @code{mdep} component of @code{cc_status} should
+be declared.  It defaults to @code{int}.
+
+@item CC_STATUS_MDEP_INIT
+A C expression for the initial value of the @code{mdep} field.
+It defaults to 0.
+
+@item NOTICE_UPDATE_CC (@var{exp})
+A C compound statement to set the components of @code{cc_status}
+appropriately for an insn whose body is @var{exp}.  It is this
+macro's responsibility to recognize insns that set the condition code
+as a byproduct of other activity as well as those that explicitly
+set @code{(cc0)}.
+
+If there are insn that do not set the condition code but do alter other
+machine registers, this macro must check to see whether they invalidate the
+expressions that the condition code is recorded as reflecting.  For
+example, on the 68000, insns that store in address registers do not set the
+condition code, which means that usually @code{NOTICE_UPDATE_CC} can leave
+@code{cc_status} unaltered for such insns.  But suppose that the previous
+insn set the condition code based on location @code{a4@@(102)} and the
+current insn stores a new value in @code{a4}.  Although the condition code
+is not changed by this, it will no longer be true that it reflects the
+contents of @code{a4@@(102)}.  Therefore, @code{NOTICE_UPDATE_CC} must alter
+@code{cc_status} in this case to say that nothing is known about the
+condition code value.
+@end table
+
+@node Assembler Format,, Condition Code, Machine Macros
+@section Output of Assembler Code
+
+@table @code
+@item TEXT_SECTION_ASM_OP
+A C string constant for the assembler operation that should precede
+instructions and read-only data.  Normally @code{".text"} is right.
+
+@item DATA_SECTION_ASM_OP
+A C string constant for the assembler operation to identify the following
+data as writable initialized data.  Normally @code{".data"} is right.
+
+@item REGISTER_NAMES
+A C initializer containing the assembler's names for the machine registers,
+each one as a C string constant.  This is what translates register numbers
+in the compiler into assembler language.
+
+@item DBX_REGISTER_NUMBER (@var{regno})
+A C expression that returns the DBX register number for the compiler register
+number @var{regno}.  In simple cases, the value of this expression may be
+@var{regno} itself.  But sometimes there are some registers that the compiler
+knows about and DBX does not, or vice versa.  In such cases, some register
+may need to have one number in the compiler and another for DBX.
+
+@item ASM_OUTPUT_DOUBLE (@var{file}, @var{value})
+A C statement to output to the stdio stream @var{file} an assembler
+instruction to assemble a @code{double} constant whose value is
+@var{value}.  @var{value} will be a C expression of type @code{double}.
+
+@item ASM_OUTPUT_FLOAT (@var{file}, @var{value})
+A C statement to output to the stdio stream @var{file} an assembler
+instruction to assemble a @code{float} constant whose value is @var{value}.
+@var{value} will be a C expression of type @code{float}.
+
+@item ASM_OUTPUT_SKIP (@var{file}, @var{nbytes})
+A C statement to output to the stdio stream @var{file} an assembler
+instruction to advance the location counter by @var{nbytes} bytes.
+@var{nbytes} will be a C expression of type @code{int}.
+
+@item ASM_OUTPUT_ALIGN (@var{file}, @var{power})
+A C statement to output to the stdio stream @var{file} an assembler
+instruction to advance the location counter to a multiple of 2 to the
+@var{power} bytes.  @var{power} will be a C expression of type @code{int}.
+
+@item ASM_INT_OP
+A C string constant for the assembler operation that assembles constants of
+C type @code{int}.  A space must follow the operation name.  Normally
+@code{".long@ "}.
+
+@item ASM_SHORT_OP
+@itemx ASM_CHAR_OP
+Likewise, for C types @code{short} and @code{char}.  Normally @code{".word@ "}
+and @code{".byte@ "}.
+
+@item TARGET_BELL
+A C constant expression for the integer value for escape sequence @samp{\a}.
+
+@item TARGET_BS
+@itemx TARGET_TAB
+@itemx TARGET_NEWLINE
+C constant expressions for the integer values for escape sequences
+@samp{\b}, @samp{\t} and @samp{\n}.
+
+@item TARGET_VT
+@itemx TARGET_FF
+@itemx TARGET_CR
+C constant expressions for the integer values for escape sequences
+@samp{\v}, @samp{\f} and @samp{\r}.
+
+@item PRINT_OPERAND (@var{file}, @var{x})
+A C compound statement to output to stdio stream @var{file}
+the assembler syntax for an instruction operand @var{x}.
+@var{x} is an RTL expression.
+
+If @var{x} is a register, this macro should print the register's name.  The
+names can be found in an array @code{reg_names} whose type is @code{char
+*[]}.  @code{reg_names} is initialized from @code{REGISTER_NAMES}.
+
+@item PRINT_OPERAND_ADDRESS (@var{file}, @var{x})
+A C compound statement to output to stdio stream @var{file} the assembler
+syntax for an instruction operand that is a memory reference whose address
+is @var{x}.  @var{x} is an RTL expression.
+@end table
+
+@contents
+@bye

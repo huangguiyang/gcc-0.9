@@ -1,0 +1,199 @@
+This is TeX, Version 2.0 for Berkeley UNIX (preloaded format=plain 86.6.3)  22 MAR 1987 01:44
+**internals.texinfo 
+(internals.texinfo (texinfo.tex Loading texinfo package [Version 1]:  Basics,
+\bindingoffset=\dimen16
+\normaloffset=\dimen17
+\pagewidth=\dimen18
+\pageheight=\dimen19
+\cornerlong=\dimen20
+\cornerthick=\dimen21
+\topandbottommargin=\dimen22
+\outerhsize=\dimen23
+\outervsize=\dimen24
+\EMsimple=\toks12
+\singlespaceskip=\skip18
+
+fonts,
+\fontdepth=\count25
+ page headings,
+\evenheadline=\toks13
+\oddheadline=\toks14
+\evenfootline=\toks15
+\oddfootline=\toks16
+ tables,
+\tableindent=\dimen25
+\itemindent=\dimen26
+\itemmargin=\dimen27
+\itemmax=\dimen28
+\itemno=\count26
+ indexing,
+\secondaryindent=\skip19
+\partialpage=\box16
+\doublecolumnhsize=\dimen29
+\doublecolumnvsize=\dimen30
+ sectioning,
+\chapno=\count27
+\secno=\count28
+\subsecno=\count29
+\subsubsecno=\count30
+\appendixno=\count31
+\contentsfile=\write0
+\chapheadingskip=\skip20
+\subsecheadingskip=\skip21
+\secheadingskip=\skip22
+ toc printing,
+environments,
+\lispnarrowing=\skip23
+\aboveenvskipamount=\skip24
+ cross reference,
+\auxfile=\write1
+ (internals.aux)
+and turning on texinfo input format.
+\cpindfile=\write2
+\fnindfile=\write3
+\vrindfile=\write4
+\tpindfile=\write5
+\kyindfile=\write6
+\pgindfile=\write7
+) [1] [2] (GNU CC GENERAL PUBLIC LICENSE)
+[1]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(643.20255+2.73749)x469.75499, glue set 5.22882
+.\glue(\topskip) 36.53906
+.\hbox(7.60416+2.12917)x469.75499, glue set - 0.06184
+..\glue(\leftskip) 43.36243
+..\hbox(0.0+0.0)x0.0
+..\glue 0.0
+..\hbox(4.44444+0.0)x0.0, glue set - 12.22743fil
+...\glue 0.0 plus 1.0fil minus 1.0fil
+...\mathon
+...\tensy ^^O
+...\mathoff
+...\glue 7.22743
+..\tenrm c
+..etc.
+.\penalty 300
+.\penalty 300
+.\glue(\baselineskip) 5.26668
+.etc.
+
+ [2]
+Chapter 1 [3] [4] [5] Chapter 2 [6] Chapter 3 [7] [8] Chapter 4 [9] [10]
+[11] [12] [13] Chapter 5 [14] [15] [16]
+Underfull \vbox (badness 2452) has occurred while \output is active
+\vbox(643.20255+2.12917)x469.75499, glue set 2.90593
+.\glue(\topskip) 36.53906
+.\hbox(7.60416+2.12917)x469.75499, glue set 218.23933fil
+..\tenrm a
+..\tenrm c
+..\tenrm c
+..\tenrm e
+..\tenrm s
+..etc.
+.\penalty -50
+.\glue 18.0 plus 1.0
+.\kern 3.0
+.etc.
+
+ [17]
+[18]
+Underfull \vbox (badness 10000) has occurred while \output is active
+\vbox(643.20255+2.12917)x469.75499, glue set 6.89548
+.\glue(\topskip) 36.53906
+.\hbox(7.60416+2.12917)x469.75499
+..\glue(\leftskip) 57.81621
+..\hbox(7.60416+2.12917)x411.93878, glue set 410.27332fil
+...\glue -57.81621
+...\hbox(7.60416+2.12917)x59.48166 []
+...\glue 0.0 plus 1.0fil minus 1.0fil
+..\glue(\rightskip) 0.0
+.\penalty 10000
+.\penalty 150
+.\glue(\baselineskip) 5.26668
+.etc.
+
+ [19]
+Underfull \vbox (badness 2469) has occurred while \output is active
+\vbox(643.20255+2.12917)x469.75499, glue set 2.91449
+.\glue(\topskip) 34.14323
+.\hbox(9.99998+2.79999)x469.75499, glue set 241.67857fill
+..\secrm 5
+..\secrm .
+..\secrm 4
+..\kern 8.27994
+..\secrm C
+..etc.
+.\penalty 10000
+.\write0{\secentry {Constant Expression Types}{5}{4}{\folio }}
+.\write1{'xrdef {Constants-pg}{\folio }}
+.etc.
+
+ [20]
+[21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34]
+Chapter 6 [35] [36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47]
+Underfull \vbox (badness 3792) has occurred while \output is active
+\vbox(643.20255+0.0)x469.75499, glue set 3.36137
+.\glue(\topskip) 35.93073
+.\hbox(8.2125+2.73749)x469.75499, glue set 0.11894
+..\glue(\leftskip) 57.81621
+..\hbox(7.60416+0.0)x0.0, glue set 7.78107fil
+...\glue -57.81621
+...\hbox(7.60416+0.0)x50.03514 []
+...\glue 0.0 plus 1.0fil minus 1.0fil
+..\tenrm T
+..\kern-0.91252
+..\tenrm r
+..etc.
+.\penalty 300
+.\glue(\baselineskip) 4.05002
+.\hbox(8.2125+2.73749)x469.75499, glue set 99.25511fil
+..\glue(\leftskip) 57.81621
+..\tenrm m
+..\tenrm o
+..\kern0.30417
+..\tenrm d
+..etc.
+.etc.
+
+ [48]
+Underfull \vbox (badness 3354) has occurred while \output is active
+\vbox(643.20255+1.04173)x469.75499, glue set 3.22882
+.\glue(\topskip) 34.14323
+.\hbox(9.99998+2.79999)x469.75499, glue set 200.44273fill
+..\secrm 6
+..\secrm .
+..\secrm 5
+..\kern 8.27994
+..\secrm P
+..etc.
+.\penalty 10000
+.\write0{\secentry {Patterns Require Other Patterns}{6}{5}{\folio }}
+.\write1{'xrdef {Dependent Patterns-pg}{\folio }}
+.etc.
+
+ [49]
+Chapter 7 [50] [51] [52] [53]
+Underfull \vbox (badness 4505) has occurred while \output is active
+\vbox(643.20255+2.12917)x469.75499, glue set 3.56215
+.\glue(\topskip) 36.53906
+.\hbox(7.60416+0.0)x469.75499, glue set 3.29051fil
+..\glue(\leftskip) 57.81621
+..\tenrm a
+..\kern-0.30418
+..\tenrm v
+..\kern-0.30418
+..etc.
+.\glue(\parskip) 3.0 plus 1.0 minus 1.0
+.\glue(\baselineskip) 6.7875
+.\hbox(8.2125+2.73749)x469.75499, glue set 0.26047
+..\glue(\leftskip) 57.81621
+..\hbox(0.0+0.0)x0.0
+..\tenrm I
+..\tenrm f
+..\glue 3.65 plus 1.825 minus 1.21666
+..etc.
+.etc.
+
+ [54]
+[55] [56] [57] [58] [59] [60] [61] [62] [63] (internals.toc [-1]) [-2]
+Output written on internals.dvi (67 pages, 178380 bytes).

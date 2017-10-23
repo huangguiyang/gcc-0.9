@@ -1,0 +1,91 @@
+/* This file contains the definitions and documentation for the
+   machine modes used in the the GNU compiler.
+   Copyright (C) 1987 Free Software Foundation, Inc.
+
+This file is part of GNU CC.
+
+GNU CC is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY.  No author or distributor
+accepts responsibility to anyone for the consequences of using it
+or for whether it serves any particular purpose or works at all,
+unless he says so in writing.  Refer to the GNU CC General Public
+License for full details.
+
+Everyone is granted permission to copy, modify and redistribute
+GNU CC, but only under the conditions described in the
+GNU CC General Public License.   A copy of this license is
+supposed to have been given to you along with GNU CC so you
+can know your rights and responsibilities.  It should be in a
+file named COPYING.  Among other things, the copyright notice
+and this notice must be preserved on all copies.  */
+
+
+/* The first argument is the internal name of the machine mode
+   used in the C source.
+   By convention these are in UPPER_CASE, except for the lower case "mode".
+
+   The second argument  is the name of the machine mode in the
+   external ASCII format read by for both the rtl and tree.
+   By convention these names in UPPER_CASE.
+
+   Third argument states the kind of representation:
+   0 - none
+   1 - unsigned int
+   2 - signed int
+   3 - float
+   4+n - complex whatever
+   8+n - bit field 
+
+   16 and up - pointer
+   16 is normal pointer
+   17 is special bit-field pointer
+   18 is relative pointer.
+
+   Fourth argument is the size of the object, in bytes.
+   It is zero when the size is meaningless or not determined.
+
+   Fifth arg is size of subunits of the object, in bytes.
+   It is same as 4 except for complexes and EPmode,
+   since they are really made of two equal size subunits.  */
+
+DEF_MACHMODE (VOIDmode, "VOID", 0, 0, 0)
+DEF_MACHMODE (QImode, "QI", 2, 1, 1)		/* signed types */
+DEF_MACHMODE (HImode, "HI", 2, 2, 2)
+DEF_MACHMODE (SImode, "SI", 2, 4, 4)
+DEF_MACHMODE (DImode, "DI", 2, 8, 8)
+DEF_MACHMODE (TImode, "TI", 2, 16, 16)
+DEF_MACHMODE (QFmode, "QF", 3, 1, 1)
+DEF_MACHMODE (HFmode, "HF", 3, 2, 2)		/* floating types */
+DEF_MACHMODE (SFmode, "SF", 3, 4, 4)
+DEF_MACHMODE (DFmode, "DF", 3, 8, 8)
+DEF_MACHMODE (TFmode, "TF", 3, 16, 16)
+DEF_MACHMODE (CQImode, "CQI", 6, 2, 1)
+DEF_MACHMODE (CHImode, "CHI", 6, 4, 2)		/* complex signed types */
+DEF_MACHMODE (CSImode, "CSI", 6, 8, 4)
+DEF_MACHMODE (CDImode, "CDI", 6, 16, 8)
+DEF_MACHMODE (CTImode, "CTI", 6, 32, 16)
+DEF_MACHMODE (CQFmode, "CQF", 7, 2, 1)
+DEF_MACHMODE (CHFmode, "CHF", 7, 4, 2)		/* complex floating types */
+DEF_MACHMODE (CSFmode, "CSF", 7, 8, 4)
+DEF_MACHMODE (CDFmode, "CDF", 7, 16, 8)
+DEF_MACHMODE (CTFmode, "CTF", 7, 32, 16)
+
+DEF_MACHMODE (BWmode, "BW", 8, 0, 0)	/* left-aligned bit field */
+DEF_MACHMODE (BUmode, "BU", 9, 0, 0)	/* unsigned bit field */
+DEF_MACHMODE (BImode, "BI", 10, 0, 0)	/* signed bit field */
+
+DEF_MACHMODE (BLKmode, "BLK", 0, 0, 0)	/* Structure or large object.  */
+
+DEF_MACHMODE (EPmode, "EP", 16, 8, 4)	/* Function variable in algol */
+					/* Includes a saved static chain */
+
+/* Note that Pmode is not a separate mode.
+   It is defined as a macro the turns into one of the above
+   (probably SImode).  */
+
+/*
+Local variables:
+mode:c
+version-control: t
+End:
+*/

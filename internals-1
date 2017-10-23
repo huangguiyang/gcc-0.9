@@ -1,0 +1,1172 @@
+Info file internals, produced by texinfo-format-buffer   -*-Text-*-
+from file internals.texinfo
+
+
+This file documents the internals of the GNU compiler.
+
+Copyright (C) 1987 Richard M. Stallman.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled "GNU CC General Public License" is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled "GNU CC General Public License" may be
+included in a translation approved by the author instead of in the original
+English.
+
+
+
+
+
+File: internals  Node: Top, Up: (DIR), Next: Switches
+
+Introduction
+************
+
+This manual documents how to install and port the GNU C compiler.
+
+* Menu:
+
+* Copying::         GNU CC General Public License says
+                     how you can copy and share GNU CC.
+* Switches::        Command switches supported by `gcc'.
+* Installation::    How to configure, compile and install GNU CC.
+* Portability::     Goals of GNU CC's portability features.
+* Passes::          Order of passes, what they do, and what each file is for.
+* RTL::             The intermediate representation that most passes work on.
+* Machine Desc::    How to write machine description instruction patterns.
+* Machine Macros::  How to write the machine description C macros.
+
+
+File: internals  Node: Copying, Prev: Top, Up: Top, Next: Switches
+
+GNU CC GENERAL PUBLIC LICENSE
+*****************************
+
+  The license agreements of most software companies keep you at the
+mercy of those companies.  By contrast, our general public license is
+intended to give everyone the right to share GNU CC.  To make sure that
+you get the rights we want you to have, we need to make restrictions
+that forbid anyone to deny you these rights or to ask you to surrender
+the rights.  Hence this license agreement.
+
+  Specifically, we want to make sure that you have the right to give
+away copies of GNU CC, that you receive source code or else can get it
+if you want it, that you can change GNU CC or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  To make sure that everyone has such rights, we have to forbid you to
+deprive anyone else of these rights.  For example, if you distribute
+copies of GNU CC, you must give the recipients all the rights that you
+have.  You must make sure that they, too, receive or can get the
+source code.  And you must tell them their rights.
+
+  Also, for our own protection, we must make certain that everyone
+finds out that there is no warranty for GNU CC.  If GNU CC is modified by
+someone else and passed on, we want its recipients to know that what
+they have is not what we distributed, so that any problems introduced
+by others will not reflect on our reputation.
+
+  Therefore we (Richard Stallman and the Free Software Fundation,
+Inc.) make the following terms which say what you must do to be
+allowed to distribute or change GNU CC.
+
+
+COPYING POLICIES
+================
+
+  1. You may copy and distribute verbatim copies of GNU CC source code as
+     you receive it, in any medium, provided that you conspicuously and
+     appropriately publish on each copy a valid copyright notice
+     "Copyright (C) 1987 Free Software Foundation, Inc."  (or
+     with the year updated if that is appropriate); keep intact the notices
+     on all files that refer to this License Agreement and to the absence
+     of any warranty; and give any other recipients of the GNU CC program a
+     copy of this License Agreement along with the program.  You may charge
+     a distribution fee for the physical act of transferring a copy.
+     
+  2. You may modify your copy or copies of GNU CC or any portion of it,
+     and copy and distribute such modifications under the terms of
+     Paragraph 1 above, provided that you also do the following:
+     
+        * cause the modified files to carry prominent notices stating
+          that you changed the files and the date of any change; and
+          
+        * cause the whole of any work that you distribute or publish,
+          that in whole or in part contains or is a derivative of GNU CC or
+          any part thereof, to be licensed at no charge to all third
+          parties on terms identical to those contained in this License
+          Agreement (except that you may choose to grant more extensive
+          warranty protection to some or all third parties, at your
+          option).
+          
+        * You may charge a distribution fee for the physical act of
+          transferring a copy, and you may at your option offer warranty
+          protection in exchange for a fee.
+     
+  3. You may copy and distribute GNU CC or any portion of it in
+     compiled, executable or object code form under the terms of Paragraphs
+     1 and 2 above provided that you do the following:
+     
+        * cause each such copy to be accompanied by the
+          corresponding machine-readable source code, which must
+          be distributed under the terms of Paragraphs 1 and 2 above; or,
+          
+        * cause each such copy to be accompanied by a
+          written offer, with no time limit, to give any third party
+          free (except for a nominal shipping charge) a machine readable
+          copy of the corresponding source code, to be distributed
+          under the terms of Paragraphs 1 and 2 above; or,
+          
+        * in the case of a recipient of GNU CC in compiled, executable
+          or object code form (without the corresponding source code) you
+          shall cause copies you distribute to be accompanied by a copy
+          of the written offer of source code which you received along
+          with the copy you received.
+     
+  4. You may not copy, sublicense, distribute or transfer GNU CC
+     except as expressly provided under this License Agreement.  Any attempt
+     otherwise to copy, sublicense, distribute or transfer GNU CC is void and
+     your rights to use the program under this License agreement shall be
+     automatically terminated.  However, parties who have received computer
+     software programs from you with this License Agreement will not have
+     their licenses terminated so long as such parties remain in full compliance.
+     
+  5. If you wish to incorporate parts of GNU CC into other free programs
+     whose distribution conditions are different, write to the Free Software
+     Foundation at 1000 Mass Ave, Cambridge, MA 02138.  We have not yet worked
+     out a simple rule that can be stated here, but we will often permit this.
+     We will be guided by the two goals of preserving the free status of all
+     derivatives our free software and of promoting the sharing and reuse of
+     software.
+
+Your comments and suggestions about our licensing policies and our
+software are welcome!  Please contact the Free Software Foundation, Inc.,
+1000 Mass Ave, Cambridge, MA 02138, or call (617) 876-3296.
+
+
+NO WARRANTY
+===========
+
+  BECAUSE GNU CC IS LICENSED FREE OF CHARGE, WE PROVIDE ABSOLUTELY NO
+WARRANTY, TO THE EXTENT PERMITTED BY APPLICABLE STATE LAW.  EXCEPT
+WHEN OTHERWISE STATED IN WRITING, FREE SOFTWARE FOUNDATION, INC,
+RICHARD M. STALLMAN AND/OR OTHER PARTIES PROVIDE GNU CC "AS IS" WITHOUT
+WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND
+PERFORMANCE OF GNU CC IS WITH YOU.  SHOULD GNU CC PROVE DEFECTIVE, YOU
+ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
+
+ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW WILL RICHARD M.
+STALLMAN, THE FREE SOFTWARE FOUNDATION, INC., AND/OR ANY OTHER PARTY
+WHO MAY MODIFY AND REDISTRIBUTE GNU CC AS PERMITTED ABOVE, BE LIABLE TO
+YOU FOR DAMAGES, INCLUDING ANY LOST PROFITS, LOST MONIES, OR OTHER
+SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR
+INABILITY TO USE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA
+BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY THIRD PARTIES OR A
+FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS) GNU CC, EVEN
+IF YOU HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, OR FOR
+ANY CLAIM BY ANY OTHER PARTY.
+
+
+File: internals  Node: Switches, Prev: Copying, Up: Top, Next: Installation
+
+GNU CC Switches
+***************
+
+`-O'     
+     Do optimize.
+     
+`-g'     
+     Produce debugging information in DBX format.
+     
+`-c'     
+     Compile but do not link the object files.
+     
+`-o FILE'     
+     Place linker output in file FILE.
+     
+`-S'     
+     Compile into assembler code but do not assemble.
+     
+`-mMACHINESPEC'     
+     Machine-dependent switch specifying something about the type
+     of target machine.  For example, using the 68000 machine description,
+     `-m68000' specifies do not use the 68020 instructions,
+     and `-msoft-float' specifies do not use the 68881 floating point
+     instructions.
+     
+`-dLETTERS'     
+     Says to make debugging dumps at times specified by LETTERS.
+     Here are the possible letters:
+     
+     `t'     
+          Dump syntax-tree.
+     `r'     
+          Dump after RTL generation.
+     `j'     
+          Dump after first jump optimization.
+     `s'     
+          Dump after CSE.
+     `L'     
+          Dump after loop optimization.
+     `f'     
+          Dump after flow analysis.
+     `c'     
+          Dump after instruction combination.
+     `l'     
+          Dump after local register allocation.
+     `g'     
+          Dump after global register allocation.
+     
+`-pedantic'     
+     Attempt to support strict ANSI standard C.  Valid ANSI standard C
+     programs should compile properly with or without this switch.
+     However, without this switch, certain useful or traditional constructs
+     banned by the standard are supported.  With this switch, they are
+     rejected.  There is no reason to use this switch; it exists only
+     to satisfy pedants.
+     
+`E'     
+     Preprocess the input files and output the results to standard output.
+     
+`C'     
+     Tell the preprocessor not to discard comments.  Used with the `-E'
+     switch.
+     
+`IDIR'     
+     Search directory DIR for include files.
+     
+`DMACRO'     
+     Define macro MACRO with the empty string as its definition.
+     
+`DMACRO=DEFN'     
+     Define macro MACRO as DEFN.
+     
+`UMACRO'     
+     Undefine macro MACRO.
+     
+`w'     
+     Inhibit warning messages.
+     
+`v'     
+     Compiler driver program prints the commands it executes as it runs
+     the preprocessor, compiler proper, assembler and linker.
+     
+`BPREFIX'     
+     Compiler driver program tries PREFIX as a prefix for each program
+     it tries to run.  These programs are `cpp', `cc1',
+     `as' and `ld'.
+     
+     For each subprogram to be run, the compiler driver first tries the
+     `-B' prefix, if any.  If that name is not found, or if `-B'
+     was not specified, the driver tries two standard prefixes, which are
+     `/usr/lib/gcc-' and `/usr/local/lib/gcc-'.  If neither of
+     those results in a file name that is found, the unmodified program
+     name is searched for using the `PATH' environment variable.
+
+
+File: internals  Node: Installation, Prev: Switches, Up: Top, Next: Portability
+
+Installing GNU CC
+*****************
+
+  1. Choose configuration files.
+     
+        * Make a symbolic link from file `config.h' to the top-level
+          config file for the machine you are using.  Its name should be
+          `config-MACHINE.h'.  This file is responsible for
+          defining information about the host machine.  It includes
+          `tm.h'.
+          
+        * Make a symbolic link from `tm.h' to the machine-description
+          macro file for your machine (its name should be
+          `tm-MACHINE.h').
+          
+        * Make a symbolic link from `md' to the
+          machine description pattern file (its name should be
+          `MACHINE.md').
+          
+        * Make a symbolic link from
+          `aux-output.c' to the output-subroutine file for your machine
+          (its name should be `MACHINE-output.c').
+     
+  2. Make sure the Bison parser generator is installed.
+     
+  3. Build the compiler.  Just type `make' in the compiler directory.
+     
+  4. Delete `*.o' in the compiler directory.  The executables from
+     the previous step remain for the next step.
+     
+  5. Remake the compiler with
+     
+          make CC=./gcc CFLAGS="-g -O -I."
+     
+  6. Install the compiler's passes.  Copy the file `cc1' just made
+     to `/usr/local/lib/gcc-cc1'.
+     
+     Make the file `/usr/local/lib/gcc-cpp' either a link to `/lib/cpp'
+     or a copy of the file `cpp' generated by `make'.
+     
+     *Warning: the GNU CPP may not work for @file{ioctl.h}.* This
+     cannot be fixed in the GNU CPP because the bug is in `ioctl.h':
+     at least on some machines, it relies on behavior that is incompatible
+     with ANSI C.  This behavior consists of substituting for macro
+     argument names when they appear inside of character constants.
+     
+  7. Install the compiler driver.  This is the file `gcc' generated
+     by `make'.
+
+
+File: internals  Node: Portability, Prev: Installation, Up: Top, Next: Passes
+
+GNU CC and Portability
+**********************
+
+The main goal of GNU CC was to make a good, fast compiler for machines in
+the class that the GNU system aims to run on: 32-bit machines that address
+8-bit bytes and have several general registers.  Elegance, theoretical
+power and simplicity are only secondary.
+
+GNU CC gets most of the information about the target machine from a machine
+description which gives an algebraic formula for each of the machine's
+instructions.  This is a very clean way to describe the target.  But when
+the compiler needs information that is difficult to express in this
+fashion, I have not hesitated to define an ad-hoc parameter to the machine
+description.  The purpose of portability is to reduce the total work needed
+on the compiler; it was not of interest for its own sake.
+
+GNU CC does not contain machine dependent code, but it does contain code
+that depends on machine parameters such as endianness (whether the most
+significant byte has the highest or lowest address of the bytes in a word)
+and the availability of autoincrement addressing.  In the RTL-generation
+pass, it is often necessary to have multiple strategies for generating code
+for a particular kind of syntax tree, strategies that are usable for different
+combinations of parameters.  Often I have not tried to address all possible
+cases, but only the common ones or only the ones that I have encountered.
+As a result, a new target may require additional strategies.  You will know
+if this happens because the compiler will call `abort'.  Fortunately,
+the new strategies can be added to all versions of the compiler, and will
+be relevant only for target machines that need them.
+
+
+File: internals  Node: Passes, Prev: Portability, Up: Top, Next: RTL
+
+Passes and Files of the Compiler
+********************************
+
+The overall control structure of the compiler is in `toplev.c'.  This
+file is responsible for initialization, decoding arguments, opening and
+closing files, and sequencing the passes.
+
+The parsing pass is invoked only once, to parse the entire input.  Each
+time a complete function definition or top-level data definition is read,
+the parsing pass calls the function `rest_of_compilation' in
+`toplev.c', which is responsible for all further processing necessary,
+ending with output of the assembler language.  All other compiler passes
+run, in sequence, within `rest_of_compilation'.  After
+`rest_of_compilation' returns from compiling a function definition,
+the storage used for its compilation is entirely freed.
+
+Here is a list of all the passes of the compiler and their source files.
+Also included is a description of where debugging dumps can be requested
+with `-d' switches.
+
+   * Parsing.  This pass reads the entire text of a function definition,
+     constructing a syntax tree.  The tree representation does not entirely
+     follow C syntax, because it is intended to support other languages as well.
+     
+     C data type analysis is also done in this pass, and every tree node that
+     represents an expression has a data type attached.  Variables are represented
+     as declaration nodes.
+     
+     Constant folding and associative-law simplifications are also done during
+     this pass.
+     
+     The source files of the parsing pass are `parse.y', `decl.c',
+     `typecheck.c', `stor-layout.c', `fold-const.c', and
+     `tree.c'.  The last three are intended to be language-independent.
+     There are also header files `parse.h', `c-tree.h',
+     `tree.h' and `tree.def'.  The last two define the format of
+     the tree representation.
+     
+   * RTL generation.  This pass converts the tree structure for one
+     function into RTL code.  
+     
+     This is where the bulk of target-parameter-dependent code is found,
+     since often it is necessary for strategies to apply only when certain
+     standard kinds of instructions are available.  The purpose of named
+     instruction patterns is to provide this information to the RTL
+     generation pass.
+     
+     Optimization is done in this pass for `if'-conditions that are
+     comparisons, boolean operations or conditional expressions.  Tail
+     recursion is detected at this time also.  Decisions are made about how
+     best to arrange loops and how to output `switch' statements.
+     
+     The files of the RTL generation pass are `stmt.c', `expr.c',
+     `explow.c', `expmed.c', `optabs.c' and `emit-rtl.c'.
+     Also, the file `insn-emit.c', generated from the machine description
+     by the program `genemit', is used in this pass.  The header files
+     `expr.h' is used for communication within this pass.
+     
+     The header files `insn-flags.h' and `insn-codes.h', generated from
+     the machine description by the programs `genflags' and `gencodes',
+     tell this pass which standard names are available for use and which patterns
+     correspond to them.
+     
+     Aside from debugging information output, none of the following passes
+     refers to the tree structure representation of the function.
+     
+     The switch `-dr' causes a debugging dump of the RTL code after this
+     pass.  This dump file's name is made by appending `.rtl' to the
+     input file name.
+     
+   * Jump optimization.  This pass simplifies jumps to the following instruction,
+     jumps across jumps, and jumps to jumps.  It deletes unreferenced labels
+     and unreachable code, except that unreachable code that contains a loop
+     is not recognized as unreachable in this pass.  (Such loops are deleted
+     later in the basic block analysis.)
+     
+     Jump optimization is performed two or three times.  The first time is
+     immediately following RTL generation.
+     
+     The source file of this pass is `jump.c'.
+     
+     The switch `-dj' causes a debugging dump of the RTL code after this
+     pass is run for the first time.  This dump file's name is made by appending
+     `.jump' to the input file name.
+     
+   * Register scan.  This pass finds the first and last use of each
+     register, as a guide for common subexpression elimination.  Its source
+     is in `regclass.c'.
+     
+   * Common subexpression elimination.  This pass also does constant
+     propagation.  Its source file is `cse.c'.  If constant
+     propagation causes conditional jumps to become unconditional or to
+     become no-ops, jump optimization is run again when cse is finished.
+     
+     The switch `-ds' causes a debugging dump of the RTL code after
+     this pass.  This dump file's name is made by appending `.cse' to
+     the input file name.
+     
+   * Loop optimization.  This pass moves constant expressions out of loops.
+     Its source file is `loop.c'.
+     
+     The switch `-dL' causes a debugging dump of the RTL code after
+     this pass.  This dump file's name is made by appending `.loop' to
+     the input file name.
+     
+   * Stupid register allocation is performed at this point in a
+     nonoptimizing compilation.  It does a little data flow analysis as
+     well.  When stupid register allocation is in use, the next pass
+     executed is the reloading pass; the others in between are skipped.
+     The source file is `stupid.c', with header file `stupid.h'
+     used for communication with the RTL generation pass.
+     
+   * Data flow analysis (`flow.c').  This pass divides the program
+     into basic blocks (and in the process deletes unreachable loops); then
+     it computes which pseudo-registers are live at each point in the
+     program, and makes the first instruction that uses a value point at
+     the instruction that computed the value.
+     
+     This pass also deletes computations whose results are never used, and
+     combines memory references with add or subtract instructions to make
+     autoincrement or autodecrement addressing.
+     
+     The switch `-df' causes a debugging dump of the RTL code after
+     this pass.  This dump file's name is made by appending `.flow' to
+     the input file name.  If stupid register allocation is in use, this
+     dump file reflects the full results of such allocation.
+     
+   * Instruction combination (`combine.c').  This pass attempts to
+     combine groups of two or three instructions that are related by data
+     flow into single instructions.  It combines the RTL expressions for
+     the instructions by substitution, simplifies the result using algebra,
+     and then attempts to match the result against the machine description.
+     
+     The switch `-dc' causes a debugging dump of the RTL code after
+     this pass.  This dump file's name is made by appending `.combine'
+     to the input file name.
+     
+   * Register class preferencing.  The RTL code is scanned to find out
+     which register class is best for each pseudo register.  The source file
+     is `regclass.c'.
+     
+   * Local register allocation (`local-alloc.c').  This pass allocates
+     hard registers to pseudo registers that are used only within one basic
+     block.  Because the basic block is linear, it can use fast and powerful
+     techniques to do a very good job.
+     
+     The switch `-dl' causes a debugging dump of the RTL code after
+     this pass.  This dump file's name is made by appending `.lreg' to
+     the input file name.
+     
+   * Global register allocation (`global-alloc.c').  This pass
+     allocates hard registers for the remaining pseudo registers (those
+     whose life spans are not contained in one basic block).
+     
+   * Reloading.  This pass finds instructions that are invalid because a
+     value has failed to end up in a register, or has ended up in a
+     register of the wrong kind.  It fixes up these instructions by
+     reloading the problematical values into registers temporarily.
+     Additional instructions are generated to do the copying.
+     
+     Source files are `reload.c' and `reload1.c', plus the header
+     `reload.h' used for communication between them.
+     
+     The switch `-dg' causes a debugging dump of the RTL code after
+     this pass.  This dump file's name is made by appending `.greg' to
+     the input file name.
+     
+   * Jump optimization is repeated, this time including cross-jumping.
+     
+   * Final.  This pass outputs the assembler code for the function.  It is
+     also responsible for identifying no-op move instructions and spurious
+     test and compare instructions.  The function entry and exit sequences
+     are generated directly as assembler code in this pass; they never
+     exist as RTL.  Pseudo registers that did not get hard registers are
+     given stack slots in this pass.
+     
+     The source files are `final.c' plus `insn-output.c'; the
+     latter is generated automatically from the machine description by the
+     tool `genoutput'.  The header file `conditions.h' is used
+     for communication between these files.
+     
+   * Debugging information output.  This is run after final because it must
+     output the stack slot offsets for pseudo registers that did not get
+     hard registers.  Source files are `dbxout.c' for DBX symbol table
+     format and `symout.c' for GDB's own symbol table format.
+
+Some additional files are used by all or many passes:
+
+   * Every pass uses `machmode.def', which defines the machine modes.
+     
+   * All the passes that work with RTL use the header files `rtl.h'
+     and `rtl.def', and subroutines in file `rtl.c'.  The
+     tools `gen*' also use these files to read and work with the
+     machine description RTL.
+     
+   * Several passes refer to the header file `insn-config.h' which
+     contains a few parameters (C macro definitions) generated
+     automatically from the machine description RTL by the tool
+     `genconfig'.
+     
+   * Several passes use the instruction recognizer, which consists of
+     `recog.c' and `recog.h', plus the files `insn-recog.c'
+     and `insn-extract.c' that are generated automatically from the
+     machine description by the tools `genrecog' and `genextract'.
+     
+   * Several passes use the header file `regs.h' which defines the
+     information recorded about pseudo register usage, `basic-block.h'
+     which defines the information recorded about basic blocks.
+     
+   * `hard-reg-set.h' defines the type `HARD_REG_SET', a bit-vector
+     with a bit for each hard register, and some macros to manipulate it.
+     This type is just `int' if the machine has few enough hard registers;
+     otherwise it is an array of `int' and some of the macros expand
+     into loops.
+
+
+File: internals  Node: RTL, Prev: Passes, Up: Top, Next: Machine Desc
+
+RTL Representation
+******************
+
+Most of the work of the compiler is done on an intermediate representation
+called register tranfer language.  In this language, the instructions to be
+output are described, pretty much one by one, in an algebraic form that
+describes what the instruction does.
+
+RTL is inspired by Lisp lists.  It has both an internal form, made up of
+structures that point at other structures, and a textual form that is used
+in the machine description and in printed debugging dumps.  The textual
+form uses nested parentheses to indicate the pointers in the internal form.
+
+* Menu:
+
+* RTL Objects::       Expressions vs vectors vs strings vs integers.
+* Accessors::         Macros to access expression operands or vector elts.
+* Machine Modes::     Describing the size and format of a datum.
+* Constants::         Expressions with constant values.
+* Regs and Memory::   Expressions representing register contents or memory.
+* Arithmetic::        Expressions representing arithmetic on other expressions.
+* Comparisons::       Expressions representing comparison of expressions.
+* Bit Fields::        Expressions representing bit-fields in memory or reg.
+* Conversions::       Extending, truncating, floating or fixing.
+* RTL Declarations::  Declaring volatility, constancy, etc.
+* Side Effects::      Expressions for storing in registers, etc.
+* Incdec::            Embedded side-effects for autoincrement addressing.
+* Insns::             Expression types for entire insns.
+* Sharing::           Some expressions are unique; others *must* be copied.
+
+
+File: internals  Node: RTL Objects, Prev: RTL, Up: RTL, Next: Accessors
+
+RTL Object Types
+================
+
+RTL uses four kinds of objects: expressions, integers, strings and vectors.
+Expressions are the most important ones.  An RTL expression is a C
+structure, but it is usually referred to with a pointer; a type that is
+given the typedef name `rtx'.
+
+An integer is simply an `int', and a string is a `char *'.
+Within rtl code, strings appear only inside `symbol_ref' expressions,
+but they appear in other contexts in the rtl expressions that make up
+machine descriptions.  Their written form uses decimal digits.
+
+A string is a sequence of characters.  In core it is represented as a
+`char *' in usual C fashion, and they are written in C syntax as well.
+However, strings in RTL may never be null.  If you write an empty string in
+a machine description, it is represented in core as a null pointer rather
+than as a pointer to a null character.  In certain contexts, these null
+pointers instead of strings are valid.
+
+A vector contains an arbitrary, specified number of pointers to
+expressions.  The number of elements in the vector is explicitly present in
+the vector.  The written form of a vector consists of square brackets
+(`[...]') surrounding the elements, in sequence and with
+whitespace separating them.  Vectors of length zero are not created; null
+pointers are used instead.
+
+Expressions are classified by "expression code".  The expression code
+is a name defined in `rtl.def', which is also (in upper case) a C
+enumeration constant.  The possible expression codes and their meanings are
+machine-independent.  The code of an rtx can be extracted with the macro
+`GET_CODE (X)' and altered with `PUT_CODE (X,
+NEWCODE)'.
+
+The expression code determines how many operands the expression contains,
+and what kinds of objects they are.  In RTL, unlike Lisp, you cannot tell
+by looking at an operand what kind of object it is.  Instead, you must know
+from its context---from the expression code of the containing expression.
+For example, in an expression of code `subreg', the first operand is
+to be regarded as an expression and the second operand as an integer.  In
+an expression of code `plus', there are two operands, both of which
+are to be regarded as expressions.  In a `symbol_ref' expression,
+there is one operand, which is to be regarded as a string.
+
+Expressions are written as parentheses containing the name of the
+expression type, its flags and machine mode if any, and then the operands
+of the expression (separated by spaces).
+
+In a few contexts a null pointer is valid where an expression is normally
+wanted.  The written form of this is `(nil)'.
+
+
+File: internals  Node: Accessors, Prev: RTL Objects, Up: RTL, Next: Machine Modes
+
+Access to Operands
+==================
+
+For each expression type `rtl.def' specifies the number of contained
+objects and their kinds, with four possibilities: `e' for expression
+(actually a pointer to an expression), `i' for integer, `s' for
+string, and `E' for vector of expressions.  The sequence of letters
+for an expression code is called its "format".  Thus, the format of
+`subreg' is `ei'.
+
+Two other format characters are used occasionally: `u' and `0'.
+`u' is equivalent to `e' except that it is printed differently in
+debugging dumps, and `0' means a slot whose contents do not fit any
+normal category.  `0' slots are not printed at all in dumps, and are
+often used in special ways by small parts of the compiler.
+
+There are macros to get the number of operands and the format of an
+expression code:
+
+`GET_RTX_LENGTH (CODE)'     
+     Number of operands of an rtx of code CODE.
+     
+`GET_RTX_FORMAT (CODE)'     
+     The format of an rtx of code CODE, as a C string.
+
+Operands of expressions are accessed using the macros `XEXP',
+`XINT' and `XSTR'.  Each of these macros takes two arguments: an
+expression-pointer (rtx) and an operand number (counting from zero).  Thus,
+
+     XEXP (x, 2)
+
+accesses operand 2 of expression X, as an expression.
+
+     XINT (x, 2)
+
+accesses the same operand as an integer.  `XSTR', used in the same
+fashion, would access it as a string.
+
+Any operand can be accessed as an integer, as an expression or as a string.
+You must choose the correct method of access for the kind of value actually
+stored in the operand.  You would do this based on the expression code of
+the containing expression.  That is also how you would know how many
+operands there are.
+
+For example, if X is a `subreg' expression, you know that it has
+two operands which can be correctly accessed as `XEXP (x, 0)' and
+`XINT (x, 1)'.  If you did `XINT (x, 0)', you would get the
+address of the expression operand but cast as an integer; that might
+occasionally be useful, but it would be cleaner to write `(int) XEXP
+(x, 0)'.  `XEXP (x, 1)' would also compile without error, and would
+return the second, integer operand cast as an expression pointer, which
+would probably result in a crash when accessed.  Nothing stops you from
+writing `XEXP (x, 28)' either, but this will access memory past the
+end of the expression with unpredictable results.
+
+Access to operands which are vectors is more complicated.  You can use the
+macro `XVEC' to get the vector-pointer itself, or the macros
+`XVECEXP' and `XVECLEN' to access the elements and length of a
+vector.
+
+`XVEC (EXP, IDX)'     
+     Access the vector-pointer which is operand number IDX in EXP.
+     
+`XVECLEN (EXP, IDX)'     
+     Access the length (number of elements) in the vector which is
+     in operand number IDX in EXP.  This value is an `int'.
+     
+`XVECLEN (EXP, IDX, ELTNUM)'     
+     Access element number ELTNUM in the vector which is
+     in operand number IDX in EXP.  This value is an `rtx'.
+     
+     It is up to you to make sure that ELTNUM is not negative
+     and is less than `XVECLEN (EXP, IDX)'.
+
+All the macros defined in this section expand into lvalues and therefore
+can be used to assign the operands, lengths and vector elements as well as
+to access them.
+
+
+File: internals  Node: Machine Modes, Prev: Accessors, Up: RTL, Next: Constants
+
+Machine Modes
+=============
+
+A machine mode describes a size of data object and the representation used
+for it.  In the C code, machine modes are represented by an enumeration
+type, `enum machine_mode'.  Each rtl expression has room for a machine
+mode and so do certain kinds of tree expressions (declarations and types,
+to be precise).
+
+In debugging dumps and machine descriptions, the machine mode of an RTL
+expression is written after the expression code with a colon to separate
+them.  The letters `mode' which appear at the end of each machine mode
+name are omitted.  For example, `(reg:SI 38)' is a `reg'
+expression with machine mode `SImode'.  If the mode is
+`VOIDmode', it is not written at all.
+
+Here is a table of machine modes.
+
+`QImode'     
+     "Quarter-Integer" mode represents a single byte treated as an integer.
+     
+`HImode'     
+     "Half-Integer" mode represents a two-byte integer.
+     
+`SImode'     
+     "Single Integer" mode represents a four-byte integer.
+     
+`DImode'     
+     "Double Integer" mode represents an eight-byte integer.
+     
+`TImode'     
+     "Tetra Integer" (?) mode represents a sixteen-byte integer.
+     
+`SFmode'     
+     "Single Floating" mode represents a single-precision (four byte) floating
+     point number.
+     
+`DFmode'     
+     "Double Floating" mode represents a double-precision (eight byte) floating
+     point number.
+     
+`TFmode'     
+     "Tetra Floating" mode represents a quadruple-precision (sixteen byte)
+     floating point number.
+     
+`BLKmode'     
+     "Block" mode represents values that are aggregates to which none of
+     the other modes apply.  In rtl, only memory references can have this mode,
+     and only if they appear in string-move or vector instructions.  On machines
+     which have no such instructions, `BLKmode' will not appear in RTL.
+     
+`VOIDmode'     
+     Void mode means the absence of a mode or an unspecified mode.
+     For example, RTL expresslons of code `const_int' have mode
+     `VOIDmode' because they can be taken to have whatever mode the context
+     requires.  In debugging dumps of RTL, `VOIDmode' is expressed by
+     the absence of any mode.
+     
+`EPmode'     
+     "Entry Pointer" mode is intended to be used for function variables in
+     Pascal and other block structured languages.  Such values contain
+     both a function address and a static chain pointer for access to
+     automatic variables of outer levels.  This mode is only partially
+     implemented since C does not use it.
+     
+`CSImode, ...'     
+     "Complex Single Integer" mode stands for a complex number represented
+     as a pair of `SImode' integers.  Any of the integer and floating modes
+     may have `C' prefixed to its name to obtain a complex number mode.
+     For example, there are `CQImode', `CSFmode', and `CDFmode'.
+     Since C does not support complex numbers, these machine modes are only
+     partially implemented.
+     
+`BImode'     
+     This is the machine mode of a bit-field in a structure.  It is used
+     only in the syntax tree, never in RTL, and in the syntax tree it appears
+     only in declaration nodes.  In C, it appears only in `FIELD_DECL'
+     nodes for structure fields defined with a bit size.
+
+The machine description defines `Pmode' as a C macro which expands
+into the machine mode used for addresses.  Normally this is `SImode'.
+
+The only modes which a machine description must support are
+`QImode', `SImode', `SFmode' and `DFmode'.  The
+compiler will attempt to use `DImode' for two-word structures and
+unions, but it would not be hard to program it to avoid this.  Likewise,
+you can arrange for the C type `short int' to avoid using
+`HImode'.  In the long term it would be desirable to make the set of
+available machine modes machine-dependent and eliminate all assumptions
+about specific machine modes or their uses from the machine-independent
+code of the compiler.
+
+Here are some C macros that relate to machine modes:
+
+`GET_MODE (X)'     
+     Returns the machine mode of the rtx X.
+     
+`PUT_MODE (X, NEWMODE)'     
+     Alters the machine mode of the rtx X to be NEWMODE.
+     
+`GET_MODE_SIZE (M)'     
+     Returns the size in bytes of a datum of mode M.
+     
+`GET_MODE_BITSIZE (M)'     
+     Returns the size in bits of a datum of mode M.
+     
+`GET_MODE_UNIT_SIZE (M)'     
+     Returns the size in bits of the subunits of a datum of mode M.
+     This is the same as `GET_MODE_SIZE' except in the case of
+     complex modes and `EPmode'.  For them, the unit size ithe
+     size of the real or imaginary part, or the size of the function
+     pointer or the context pointer.
+
+
+File: internals  Node: Constants, Prev: Machine Modes, Up: RTL, Next: Regs and Memory
+
+Constant Expression Types
+=========================
+
+The simplest RTL expressions are those that represent constant values.
+
+`(const_int I)'     
+     This type of expression represents the integer value I.  I
+     is customarily accessed with the macro `INTVAL' as in
+     `INTVAL (exp)', which is equivalent to `XINT (exp, 0)'.
+     
+     There is only one expression object for the integer value zero;
+     it is the value of the variable `const0_rtx'.  Likewise, the
+     only expression for integer value one is found in `const1_rtx'.
+     Any attempt to create an expression of code `const_int' and
+     value zero or one will return `const0_rtx' or `const1_rtx'
+     as appropriate.
+     
+`(const_double:M I0 I1)'     
+     Represents a floating point constant value of mode M.  The two
+     integers I0 and I1 together contain the bits of a
+     `double' value.  To convert them to a `double', do
+     
+          union { double d; int i[2];} u;
+          u.i[0] = XINT (x, 0);
+          u.i[1] = XINT (x, 1);
+     
+     and then refer to `u.d'.  The value of the constant is
+     represented as a double in this fashion even if the value represented
+     is single-precision.
+     
+     `dconst0_rtx' and `fconst0_rtx' are `CONST_DOUBLE'
+     expressions with value 0 and modes `DFmode' and `SFmode'.
+     
+`(symbol_ref SYMBOL)'     
+     Represents the value of an assembler label for data.  SYMBOL is
+     a string that describes the name of the assembler label.  If it starts
+     with a `*', the label is the rest of SYMBOL not including
+     the `*'.  Otherwise, the label is SYMBOL, prefixed with
+     `_'.
+     
+`(label_ref LABEL)'     
+     Represents the value of an assembler label for code.  It contains one
+     operand, an expression, which must be a `code_label' that appears
+     in the instruction sequence to identify the place where the label
+     should go.
+     
+     The reason for using a distinct expression type for code label
+     references is so that jump optimization can distinguish them.
+     
+`(const EXP)'     
+     Represents a constant that is the result of an assembly-time
+     arithmetic computation.  The operand, EXP, is an expression that
+     contains only constants (`const_int', `symbol_ref' and
+     `label_ref' expressions) combined with `plus' and
+     `minus'.  However, not all combinations are valid, since the
+     assembler cannot do arbitrary arithmetic on relocatable symbols.
+
+
+File: internals  Node: Regs and Memory, Prev: Constants, Up: RTL, Next: Arithmetic
+
+Registers and Memory
+====================
+
+Here are the RTL expression types for describing access to machine
+registers and to main memory.
+
+`(reg:M N)'     
+     For small values of the integer N (less than
+     `FIRST_PSEUDO_REGISTER'), this stands for a reference to machine
+     register number N: a "hard register".  For larger values of
+     N, it stands for a temporary value or "pseudo register".
+     The compiler's strategy is to generate code assuming an unlimited
+     number of such pseudo registers, and later convert them into hard
+     registers or into memory references.
+     
+     The symbol `FIRST_PSEUDO_REGISTER' is defined by the machine
+     description, since the number of hard registers on the machine is an
+     invariant characteristic of the machine.  Note, however, that not
+     all of the machine registers must be general registers.  All the
+     machine registers that can be used for storage of data are given
+     hard register numbers, even those that can be used only in certain
+     instructions or can hold only certain types of data.
+     
+     Each pseudo register number used in a function's rtl code is
+     represented by a unique `reg' expression.
+     
+     M is the machine mode of the reference.  It is necessary because
+     machines can generally refer to each register in more than one mode.
+     For example, a register may contain a full word but there may be
+     instructions to refer to it as a half word or as a single byte, as
+     well as instructions to refer to it as a floating point number of
+     various precisions.
+     
+     Even for a register that the machine can access in only one mode,
+     the mode must always be specified.
+     
+     A hard register may be accessed in various modes throughout one
+     function, but each pseudo register is given a natural mode
+     and is accessed only in that mode.  When it is necessary to describe
+     an access to a pseudo register using a nonnatural mode, a `subreg'
+     expression is used.
+     
+     A `reg' expression with a machine mode that specifies more than
+     one word of data may actually stand for several consecutive registers.
+     If in addition the register number specifies a hardware register, then
+     it actually represents several consecutive hardware registers starting
+     with the specified one.
+     
+     Such multi-word hardware register `reg' expressions may not be live
+     across the boundary of a basic block.  The lifetime analysis pass does not
+     know how to record properly that several consecutive registers are
+     actually live there, and therefore register allocation would be confused.
+     The CSE pass must go out of its way to make sure the situation does
+     not arise.
+     
+`(subreg:M REG WORDNUM)'     
+     `subreg' expressions are used to refer to a register in a machine
+     mode other than its natural one, or to refer to one register of
+     a multi-word `reg' that actually refers to several registers.
+     
+     Each pseudo-register has a natural mode.  If it is necessary to
+     operate on it in a different mode---for example, to perform a fullword
+     move instruction on a pseudo-register that contains a single byte---
+     the pseudo-register must be enclosed in a `subreg'.  In such
+     a case, WORDNUM is zero.
+     
+     The other use of `subreg' is to extract the individual registers
+     of a multi-register value.  Machine modes such as `DImode' and
+     `EPmode' indicate values longer than a word, values which usually
+     require two consecutive registers.  To access one of the registers,
+     use a `subreg' with mode `SImode' and a WORDNUM that
+     says which register.
+     
+     The compilation parameter `WORDS_BIG_ENDIAN', if defined, says
+     that word number zero is the most significant part; otherwise, it is
+     the least significant part.
+     
+     Note that it is not valid to access a `DFmode' value in `SFmode'
+     using a `subreg'.  On some machines the most significant part of a
+     `DFmode' value does not have the same format as a single-precision
+     floating value.
+     
+`(cc0)'     
+     This refers to the machine's condition code register.  It has no
+     operands and may not have a machine mode.  It may be validly used in
+     only two contexts: as the destination of an assignment (in test and
+     compare instructions) and in comparison operators comparing against
+     zero (`const_int' with value zero; that is to say,
+     `const0_rtx'.
+     
+     There is only one expression object of code `cc0'; it is the
+     value of the variable `cc0_rtx'.  Any attempt to create an
+     expression of code `cc0' will return `cc0_rtx'.
+     
+     One special thing about the condition code register is that instructions
+     can set it implicitly.  On many machines, nearly all instructions set
+     the condition code based on the value that they compute or store.
+     It is not necessary to record these actions explicitly in the RTL
+     because the machine description includes a prescription for recognizing
+     the instructions that do so (by means of the macro `NOTICE_UPDATE_CC').
+     Only instructions whose sole purpose is to set the condition code,
+     and instructions that use the condition code, need mention `(cc0)'.
+     
+`(pc)'     
+     This represents the machine's program counter.  It has no operands and
+     may not have a machine mode.  `(pc)' may be validly used only in
+     certain specific contexts in jump instructions.
+     
+     There is only one expression object of code `pc'; it is the value of
+     the variable `pc_rtx'.  Any attempt to create an expression of code
+     `pc' will return `pc_rtx'.
+     
+     All instructions that do not jump alter the program counter implicitly,
+     but there is no need to mention this in the RTL.
+     
+`(mem:M ADDR)'     
+     This rtx represents a reference to main memory at an address
+     represented by the expression ADDR.  M specifies how
+     large a unit of memory is accessed.
+
+
+File: internals  Node: Arithmetic, Prev: Regs and Memory, Up: RTL, Next: Comparisons
+
+RTL Expressions for Arithmetic
+==============================
+
+`(plus:M X Y)'     
+     Represents the sum of the values represented by X and Y
+     carried out in machine mode M.  This is valid only if
+     X and Y both are valid for mode M.
+     
+`(minus:M X Y)'     
+     Like `plus' but represents subtraction.
+     
+`(minus X Y)'     
+     Represents the result of subtracting Y from X
+     for purposes of comparison.  The absence of a machine mode
+     in the `minus' expression indicates that the result is
+     computed without overflow, as if with infinite precision.
+     
+     Of course, machines can't really subtract with infinite precision.
+     However, they can pretend to do so when only the sign of the
+     result will be used, which is the case when the result is stored
+     in `(cc0)'.  And that is the only was this kind of expression
+     may validly be used: as a value to be stored in the condition codes.
+     
+`(neg:M X)'     
+     Represents the negation (subtraction from zero) of the value
+     represented by X, carried out in mode M.  X must be
+     valid for mode M.
+     
+`(mult:M X Y)'     
+     Represents the signed product of the values represented by X and
+     Y carried out in machine mode M.  If
+     X and Y are both valid for mode M, this is ordinary
+     size-preserving multiplication.  Alteratively, both X and Y
+     may be valid for a different, narrower mode.  This represents the
+     kind of multiplication that generates a product wider than the operands.
+     Widening multiplication and same-size multiplication are completely
+     distinct and supported by different machine instructions; machines may
+     support one but not the other.
+     
+     `mult' may be used for floating point division as well.
+     Then M is a floating point machine mode.
+     
+`(umult:M X Y)'     
+     Like `mult' but represents unsigned multiplication.  It may be
+     used in both same-size and widening forms, like `mult'.
+     `umult' is used only for fixed-point division.
+     
+`(div:M X Y)'     
+     Represents the quotient in signed division of X by Y,
+     carried out in machine mode M.  If M is a floating-point
+     mode, it represents the exact quotient; otherwise, the integerized
+     quotient.  If X and Y are both valid for mode M,
+     this is ordinary size-preserving division.  Some machines have
+     division instructions in which the operands and quotient widths are
+     not all the same; such instructions are represented by `div'
+     expressions in which the machine modes are not all the same.
+     
+`(udiv:M X Y)'     
+     Like `div' but represents unsigned division.
+     
+`(mod:M X Y)'     
+`(umod:M X Y)'     
+     Like `div' and `udiv' but represent the remainder instead of
+     the quotient.
+     
+`(not:M X)'     
+     Represents the bitwise complement of the value represented by X,
+     carried out in mode M, which must be a fixed-point machine mode.
+     X must be valid for mode M, which must be a fixed-point mode.
+     
+`(and:M X Y)'     
+     Represents the bitwise logical-and of the values represented by
+     X and Y, carried out in machine mode M.  This is
+     valid only if X and Y both are valid for mode M,
+     which must be a fixed-point mode.
+     
+`(ior:M X Y)'     
+     Represents the bitwise inclusive-or of the values represented by
+     X and Y, carried out in machine mode M.  This is
+     valid only if X and Y both are valid for mode M,
+     which must be a fixed-point mode.
+     
+`(xor:M X Y)'     
+     Represents the bitwise exclusive-or of the values represented by
+     X and Y, carried out in machine mode M.  This is
+     valid only if X and Y both are valid for mode M,
+     which must be a fixed-point mode.
+     
+`(lshift:M X C)'     
+     Represents the result of logically shifting X left by C
+     places.  X must be valid for the mode M, a fixed-point
+     machine mode.  C must be valid for a fixed-point mode;
+     which mode is determined by the mode called for in the machine
+     description entry for the left-shift instruction.  For example,
+     on the Vax, the mode of C is `QImode' regardless of M.
+     
+     On some machines, negative values of C may be meaningful; this
+     is why logical left shift an arithmetic left shift are distinguished.
+     For example, Vaxes have no right-shift instructions, and right shifts
+     are represented as left-shift instructions whose counts happen
+     to be negative constants or else computed (in a previous instruction)
+     by negation.
+     
+`(ashift:M X C)'     
+     Like `lshift' but for arithmetic left shift.
+     
+`(lshiftrt:M X C)'     
+`(ashiftrt:M X C)'     
+     Like `lshift' and `ashift' but for right shift.
+     
+`(rotate:M X C)'     
+`(rotatert:M X C)'     
+     Similar but represent left and right rotate.
+     
+`(abs:M X)'     
+     Represents the absolute value of X, computed in mode M.
+     X must be valid for M.
+     
+`(sqrt:M X)'     
+     Represents the square root of X, computed in mode M.
+     X must be valid for M.  Most often M will be
+     a floating point mode.
+
+

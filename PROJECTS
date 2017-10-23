@@ -1,0 +1,145 @@
+1. Better optimization.
+
+* More cse
+
+The techniques for doing full global cse are described in the
+red dragon book.  It is likely to be slow and use a lot of memory,
+but it might be worth offering as an additional option.
+
+It is probably possible to extend cse to a few very frequent cases
+without so much expense.
+
+For example, it is not very hard to handle cse through if-then
+statements with no else clauses.  Here's how to do it.  On reaching a
+label, notice that the label's use-count is 1 and that the last
+preceding jump jumps conditionally to this label.  Now you know it
+is a simple if-then statement.  Remove from the hash table
+all the expressions that were entered since that jump insn
+and you can continue with cse.
+
+It is probably not hard to handle cse from the end of a loop
+around to the beginning, and a few loops would be greatly sped
+up by this.
+
+* Iteration variables and strength reduction.
+
+The red dragon book describes standard techniques for these kinds
+of loop optimization.  But be careful!  These optimization techniques
+don't always make the code better.  You need to avoid performing
+the standard transformations unless they are greatly worth while.
+
+In many common cases it is possible to deduce that an iteration
+variable is always positive during the loop.  This information
+may make it possible to use decrement-and-branch instructions
+whose branch conditions are inconvenient.  For example, the 68000
+`dbra' instruction branches if the value was not equal to zero.
+Therefore, it is not applicable to `for (i = 10; i >= 0; i--)'
+unless the compiler can know that I will never be negative
+before it is decremented.
+
+* Special local optimizations.
+
+The instruction combiner finds only certain classes of local optimizations.
+For example, it cannot use the 68020 instruction `cmp2' because it would
+not think to combine the instructions that would be equivalent to a `cmp2'.
+
+In order to take advantage of such instructions, the combiner would need
+special hints as to which instructions to consider combining.  To be
+generally useful, this feature would have to be controlled somehow
+by new information in the machine description.
+
+* Smarter reload pass.
+
+The reload pass as currently written can reload values only into registers
+that are reserved for reloading.  This means that in order to use a
+register for reloading it must spill everything out of that register.
+
+It would be straightforward, though complicated, for reload1.c to keep
+track, during its scan, of which hard registers were available at each
+point in the function, and use for reloading even registers that were
+free only at the point they were needed.  This would avoid much spilling
+and make better code.
+
+* Change the type of a variable.
+
+Sometimes a variable is declared as `int', it is assigned only once
+from a value of type `char', and then it is used only by comparison
+against constants.  On many machines, better code would result if
+the variable had type `char'.  If the compiler could detect this
+case, it could change the declaration of the variable and change
+all the places that use it.
+
+* Order of subexpressions.
+
+It might be possible to make better code by paying attention
+to the order in which to generate code for subexpressions of an expression.
+
+* Better code for switch statements.
+
+If a switch statement has only a few cases, a sequence of conditional
+branches is generated for it, rather than a jump table.  It would
+be better to output a binary tree of branches.
+
+* Distributive law.
+
+*(X + 4 * (Y + C)) compiles better as *(X + 4*C + 4*Y)
+on some machines because of known addressing modes.
+It may be tricky to determine when, and for which machines,
+to use each alternative.
+
+2. Simpler porting.
+
+Right now, describing the target machine's instructions is done
+cleanly, but describing its addressing mode is done with several
+ad-hoc macro definitions.  Porting would be much easier if there were
+an RTL description for addressing modes like that for instructions.
+Tools analogous to genflags and genrecog would generate macros from
+this description.
+
+There would be one pattern in the address-description file for each
+kind of addressing, and this pattern would have:
+
+  * the RTL expression for the address
+  * C code to verify its validity (since that may depend on
+    the exact data).
+  * C code to print the address in assembler language.
+  * C code to convert the address into a valid one, if it is not valid.
+    (This would replace LEGITIMIZE_ADDRESS).
+  * Register constraints for all indeterminates that appear
+    in the RTL expression.
+
+3. Other languages.
+
+Front ends for Pascal, Fortran, Algol, Cobol and Ada are desirable.
+
+Pascal requires the implementation of functions within functions.
+Some of the mechanisms for this already exist.
+
+4. Generalize the machine model.
+
+4.A. Parameters in registers.
+
+One some machines, conventions are that some parameters are passed
+in general registers.  The compiler currently cannot handle this.
+
+This requires changes in the code in expr.c for function calls.
+For function entry, changes are required in stmt.c, and in
+layout_parms, and perhaps also in final and in register allocation,
+but the last should be minor.
+
+Where stmt.c now copies the stack slot into a pseudo register,
+instead copy the special argument register into a pseudo register.
+Use the pseudo register throughout the body of the function to
+represent the parameter.  That way, parameters can still be spilled
+to the stack.
+
+4.B. Jump-execute-next.
+
+Many recent machines have jumps which execute the following instruction
+before the instruction jumped to.  To take advantage of this capability
+requires a new compiler pass that would reorder instructions when possible.
+After reload is a good place for it.
+
+5. Add a profiling feature like Berkeley's -pg,
+or other debugging and measurement features.
+

@@ -1,0 +1,46 @@
+\initial {#}
+\entry {#elif}{26}
+\entry {#else}{26}
+\entry {#error}{28}
+\entry {#if}{24}
+\entry {#ifdef}{28}
+\entry {#ifndef}{28}
+\entry {#include}{4}
+\entry {#line}{29}
+\entry {#pragma}{30}
+\initial {-}
+\entry {-C}{31}
+\entry {-D}{32}
+\entry {-i}{32}
+\entry {-P}{31}
+\entry {-pedantic}{32}
+\entry {-T}{32}
+\entry {-U}{32}
+\entry {-undef}{32}
+\initial {{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}DATE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{11}
+\initial {{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}FILE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{10}
+\initial {{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}LINE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{10}
+\initial {{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}STDC{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{11}
+\initial {{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}TIME{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{11}
+\initial {B}
+\entry {BSD}{11}
+\initial {D}
+\entry {defined}{27}
+\initial {M}
+\entry {mc68000}{11}
+\entry {m68k}{11}
+\entry {M68020}{12}
+\initial {P}
+\entry {pyr}{12}
+\initial {S}
+\entry {sun}{12}
+\entry {system header files}{3}
+\initial {U}
+\entry {unix}{11}
+\initial {V}
+\entry {vax}{11}

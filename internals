@@ -1,0 +1,79 @@
+Info file internals, produced by texinfo-format-buffer   -*-Text-*-
+from file internals.texinfo
+
+
+This file documents the internals of the GNU compiler.
+
+Copyright (C) 1987 Richard M. Stallman.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that the
+section entitled "GNU CC General Public License" is included exactly as
+in the original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that the section entitled "GNU CC General Public License" may be
+included in a translation approved by the author instead of in the original
+English.
+
+
+
+
+
+Indirect:
+internals-1: 1029
+internals-2: 52263
+internals-3: 108191
+
+Tag table:
+(Indirect)
+Node: Top1031
+Node: Copying1784
+Node: Switches8670
+Node: Installation11625
+Node: Portability13582
+Node: Passes15343
+Node: RTL26122
+Node: RTL Objects27770
+Node: Accessors30442
+Node: Machine Modes33773
+Node: Constants38486
+Node: Regs and Memory41014
+Node: Arithmetic47103
+Node: Comparisons52265
+Node: Bit Fields55116
+Node: Conversions56208
+Node: RTL Declarations58231
+Node: Side Effects60296
+Node: Incdec66666
+Node: Insns69069
+Node: Sharing76621
+Node: Machine Desc78239
+Node: Patterns79204
+Node: Example87333
+Node: Constraints88438
+Node: Simple Constraints89351
+Node: Multi-Alternative95776
+Node: Class Preferences98134
+Node: Modifiers99003
+Node: No Constraints100269
+Node: Standard Names101259
+Node: Dependent Patterns108193
+Node: Machine Macros110754
+Node: Run-time Target111753
+Node: Storage Layout114246
+Node: Registers115699
+Node: Register Classes120949
+Node: Stack Layout128348
+Node: Addressing Modes131736
+Node: Misc133950
+Node: Condition Code136852
+Node: Assembler Format138946
+
+End tag table

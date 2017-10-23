@@ -1,0 +1,34 @@
+\entry {system header files}{3}{system header files}
+\entry {#include}{4}{#include}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}FILE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{10}{{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}FILE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}LINE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{10}{{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}LINE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}DATE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{11}{{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}DATE{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}TIME{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{11}{{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}TIME{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}
+\entry {{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}STDC{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}{11}{{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}STDC{\fam \ttfam \tentt \char '137}{\fam \ttfam \tentt \char '137}}
+\entry {unix}{11}{unix}
+\entry {BSD}{11}{BSD}
+\entry {vax}{11}{vax}
+\entry {mc68000}{11}{mc68000}
+\entry {m68k}{11}{m68k}
+\entry {M68020}{12}{M68020}
+\entry {sun}{12}{sun}
+\entry {pyr}{12}{pyr}
+\entry {#if}{24}{#if}
+\entry {#else}{26}{#else}
+\entry {#elif}{26}{#elif}
+\entry {defined}{27}{defined}
+\entry {#ifdef}{28}{#ifdef}
+\entry {#ifndef}{28}{#ifndef}
+\entry {#error}{28}{#error}
+\entry {#line}{29}{#line}
+\entry {#pragma}{30}{#pragma}
+\entry {-P}{31}{-P}
+\entry {-C}{31}{-C}
+\entry {-T}{32}{-T}
+\entry {-pedantic}{32}{-pedantic}
+\entry {-I}{32}{-I}
+\entry {-D}{32}{-D}
+\entry {-U}{32}{-U}
+\entry {-undef}{32}{-undef}
+\entry {-d}{32}{-d}
+\entry {-i}{32}{-i}

@@ -1,0 +1,8 @@
+This directory contains the initial test release of the GNU C compiler.
+Although it has compiled some large programs correctly, it probably
+has many remaining bugs that only much use by many people will detect.
+
+See the file internals.texinfo for installation and porting information.
+
+The GNU C compiler is free software.  See the file COPYING for copying
+permission.
